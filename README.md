@@ -1,6 +1,9 @@
 # Signal x ProofMode x MobileCoin 
 This repository is a proof of concept implementation of ProofMode as a notarization layer for media content captured in Signal. The signed hashes of media and proofs are registered on the MobileCoin ledger, native to Signal Messenger.
 
+- [Kanban board](https://github.com/orgs/starlinglab/projects/3/views/1)
+- [Product overview page](https://www.notion.so/Custom-Signal-build-d4eceb6275ce4870a3b31a5994306e25)
+
 This software is under development and untested. It should not be run or relied upon by users who might be at risk. Please favour [the official release of Signal for Android](https://github.com/signalapp/Signal-Android) instead.
 
 ---
