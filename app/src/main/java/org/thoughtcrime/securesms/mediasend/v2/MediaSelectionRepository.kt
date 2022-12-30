@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import org.json.JSONObject
 import org.signal.core.util.BreakIteratorCompat
 import org.signal.core.util.ThreadUtil
 import org.signal.core.util.logging.Log
@@ -28,11 +29,14 @@ import org.thoughtcrime.securesms.mediasend.MediaRepository
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.MediaTransform
 import org.thoughtcrime.securesms.mediasend.MediaUploadRepository
+import org.thoughtcrime.securesms.mediasend.ProofConstants
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
+import org.thoughtcrime.securesms.mediasend.ProofConstants.PROOF_OBJECT
 import org.thoughtcrime.securesms.mediasend.ProofModeUtil
 import org.thoughtcrime.securesms.mediasend.SentMediaQualityTransform
 import org.thoughtcrime.securesms.mediasend.VideoEditorFragment
 import org.thoughtcrime.securesms.mediasend.VideoTrimTransform
+import org.thoughtcrime.securesms.mediasend.proofFromJson
 import org.thoughtcrime.securesms.mms.MediaConstraints
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage
 import org.thoughtcrime.securesms.mms.OutgoingSecureMediaMessage
@@ -46,15 +50,9 @@ import org.thoughtcrime.securesms.sms.MessageSender.PreUploadResult
 import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.MessageUtil
-import org.witness.proofmode.ProofMode
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import java.util.Collections
 import java.util.Optional
 import java.util.concurrent.TimeUnit
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 private val TAG = Log.tag(MediaSelectionRepository::class.java)
 
@@ -284,9 +282,20 @@ class MediaSelectionRepository(context: Context) {
         isStory -> StoryType.STORY_WITH_REPLIES
         else -> StoryType.NONE
       }
+      val newBody = if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)) {
+        val headerString = PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()
+        val proofObject = JSONObject(headerString).proofFromJson()
+        "ProofMode info: \n" +
+        "Taken: ${proofObject.time}\n" +
+        "Near ${proofObject.location}, ${proofObject.latitude} N, ${proofObject.longitude} E\n" +
+        "Proofs: ${proofObject.proofsList}"
+        headerString + "\n" + body
+      } else {
+        body
+      }
       val message = OutgoingMediaMessage(
         recipient,
-        body,
+        newBody,
         emptyList(),
         if (recipient.isDistributionList) distributionListPreUploadSentTimestamps.getOrPut(preUploadResults.first()) { System.currentTimeMillis() } else System.currentTimeMillis(),
         -1,
@@ -381,7 +390,7 @@ class MediaSelectionRepository(context: Context) {
           preUploadResults.filterNot { result -> storyClips.any { it.uri == result.media.uri } }.forEach {
             val list = zipPreUploadMessages[it] ?: mutableListOf()
             list.add(
-              OutgoingSecureMediaMessage(if (isChanged) message else emptyTextMessage).withSentTimestamp(
+              OutgoingSecureMediaMessage(if (isChanged) emptyTextMessage else message).withSentTimestamp(
                 if (recipient.isDistributionList) {
                   distributionListPreUploadSentTimestamps.getOrPut(it) { System.currentTimeMillis() }
                 } else {
