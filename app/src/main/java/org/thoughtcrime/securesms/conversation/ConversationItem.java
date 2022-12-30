@@ -58,6 +58,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.util.LinkifyCompat;
 import androidx.lifecycle.LifecycleOwner;
@@ -199,6 +200,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
   @Nullable protected ViewGroup                  contactPhotoHolder;
   @Nullable private   QuoteView                  quoteView;
             private   EmojiTextView              bodyText;
+            private   ConstraintLayout           proofText;
             private   ConversationItemFooter     footer;
   @Nullable private   ConversationItemFooter     stickerFooter;
   @Nullable private   TextView                   groupSender;
@@ -302,6 +304,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
     initializeAttributes();
 
     this.bodyText                  =                    findViewById(R.id.conversation_item_body);
+    this.proofText                  =                    findViewById(R.id.proof_layout);
     this.footer                    =                    findViewById(R.id.conversation_item_footer);
     this.stickerFooter             =                    findViewById(R.id.conversation_item_sticker_footer);
     this.groupSender               =                    findViewById(R.id.group_message_sender);
@@ -816,6 +819,13 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       setAudioViewTint(messageRecord);
     }
 
+    /**
+     * HERE WE CHANGE BUBBLE COLOR
+     */
+//    bodyText.setVisibility(View.GONE);
+//    proofText.setVisibility(View.VISIBLE);
+//    bodyBubble.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+
     if (hasWallpaper) {
       replyIcon.setBackgroundResource(R.drawable.wallpaper_message_decoration_background);
     } else {
@@ -1032,6 +1042,11 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       } else {
         bodyText.setMaxLines(Integer.MAX_VALUE);
       }
+
+
+      /**
+       * HERE WE SET TEXT FOR EVERY MESSAGE
+       */
 
       bodyText.setText(StringUtil.trim(styledText));
       bodyText.setVisibility(View.VISIBLE);

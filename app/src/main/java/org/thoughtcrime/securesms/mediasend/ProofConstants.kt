@@ -13,6 +13,7 @@ object ProofConstants {
   const val IS_PROOF_LOCATION_ENABLED_LOCAL = "IS_PROOF_LOCATION_ENABLED_LOCAL"
   const val IS_PROOF_PHONE_ENABLED_LOCAL = "IS_PROOF_PHONE_ENABLED_LOCAL"
   const val IS_PROOF_NETWORK_ENABLED_LOCAL = "IS_PROOF_NETWORK_ENABLED_LOCAL"
+  const val PROOF_OBJECT = "PROOF_OBJECT"
 }
 
 fun View.setOnClickListenerWithThrottle(throttleTime: Long = 600L, action: () -> Unit) {
