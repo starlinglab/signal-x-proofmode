@@ -29,19 +29,18 @@ import org.thoughtcrime.securesms.mediasend.MediaRepository
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.MediaTransform
 import org.thoughtcrime.securesms.mediasend.MediaUploadRepository
-import org.thoughtcrime.securesms.mediasend.ProofConstants
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
 import org.thoughtcrime.securesms.mediasend.ProofConstants.PROOF_OBJECT
 import org.thoughtcrime.securesms.mediasend.ProofModeUtil
 import org.thoughtcrime.securesms.mediasend.SentMediaQualityTransform
 import org.thoughtcrime.securesms.mediasend.VideoEditorFragment
 import org.thoughtcrime.securesms.mediasend.VideoTrimTransform
-import org.thoughtcrime.securesms.mediasend.proofFromJson
 import org.thoughtcrime.securesms.mms.MediaConstraints
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage
 import org.thoughtcrime.securesms.mms.OutgoingSecureMediaMessage
 import org.thoughtcrime.securesms.mms.SentMediaQuality
 import org.thoughtcrime.securesms.mms.Slide
+import org.thoughtcrime.securesms.proofFromJson
 import org.thoughtcrime.securesms.providers.BlobProvider
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.scribbles.ImageEditorFragment
@@ -283,12 +282,14 @@ class MediaSelectionRepository(context: Context) {
         else -> StoryType.NONE
       }
       val newBody = if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)) {
-        val headerString = PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()
-        val proofObject = JSONObject(headerString).proofFromJson()
-        "ProofMode info: \n" +
-        "Taken: ${proofObject.time}\n" +
-        "Near ${proofObject.location}, ${proofObject.latitude} N, ${proofObject.longitude} E\n" +
-        "Proofs: ${proofObject.proofsList}"
+        val proofObject = JSONObject(PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()).proofFromJson()
+        val proofListString = proofObject.proofsList.map { it.title }.toString().dropLast(1).drop(1)
+        Log.e("OBJECT:", "$proofObject")
+        val headerString = "ProofMode info: \n" +
+        "Taken: ${ProofModeUtil.convertLongToTime(proofObject.time)} UTC" +
+        "\nNear: ${ProofModeUtil.convert(proofObject.latitude.toDouble(), proofObject.longitude.toDouble())}" +
+        "\nProofs: $proofListString" +
+        "\nProofs were checked and verified"
         headerString + "\n" + body
       } else {
         body

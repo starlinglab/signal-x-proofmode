@@ -214,16 +214,6 @@
             android:layout_height="wrap_content"
             android:layout="@layout/conversation_item_payment" />
 
-        <include
-            android:id="@+id/proof_layout"
-            layout="@layout/conversation_item_received_multimedia_proof"
-            android:layout_marginStart="@dimen/message_bubble_horizontal_padding"
-            android:layout_marginTop="@dimen/message_bubble_top_padding"
-            android:layout_marginEnd="@dimen/message_bubble_horizontal_padding"
-            android:layout_marginBottom="@dimen/message_bubble_bottom_padding"
-            android:visibility="gone"
-            />
-
         <org.thoughtcrime.securesms.components.emoji.EmojiTextView
             android:id="@+id/conversation_item_body"
             style="@style/Signal.Text.Body"
