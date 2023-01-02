@@ -160,6 +160,8 @@ import java.util.concurrent.TimeUnit;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
+import static org.thoughtcrime.securesms.mediasend.ProofModeUtilKt.parseProofObjectFromString;
+
 /**
  * A view that displays an individual conversation item within a conversation
  * thread.  Used by ComposeMessageActivity's ListActivity via a ConversationAdapter.
@@ -304,7 +306,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
     initializeAttributes();
 
     this.bodyText                  =                    findViewById(R.id.conversation_item_body);
-    this.proofText                  =                    findViewById(R.id.proof_layout);
+    this.proofText                 =                    findViewById(R.id.proof_layout);
     this.footer                    =                    findViewById(R.id.conversation_item_footer);
     this.stickerFooter             =                    findViewById(R.id.conversation_item_sticker_footer);
     this.groupSender               =                    findViewById(R.id.group_message_sender);
@@ -1048,8 +1050,20 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
        * HERE WE SET TEXT FOR EVERY MESSAGE
        */
 
-      bodyText.setText(StringUtil.trim(styledText));
-      bodyText.setVisibility(View.VISIBLE);
+      if (styledText.toString().startsWith("ProofMode info")) {
+        bodyText.setVisibility(View.GONE);
+        proofText.setVisibility(View.VISIBLE);
+        ArrayList<String> textList = parseProofObjectFromString(String.valueOf(styledText));
+        TextView timeText = proofText.findViewById(R.id.time_text);
+        timeText.setText(textList.get(0));
+        TextView locationText = proofText.findViewById(R.id.location_text);
+        locationText.setText("Near: " + textList.get(1));
+        TextView proofs = proofText.findViewById(R.id.proof_text);
+        proofs.setText("Proofs: " + textList.get(2));
+      } else {
+        bodyText.setText(StringUtil.trim(styledText));
+        bodyText.setVisibility(View.VISIBLE);
+      }
 
       if (conversationMessage.getBottomButton() != null) {
         callToActionStub.get().setVisibility(View.VISIBLE);

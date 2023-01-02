@@ -1,12 +1,13 @@
 package org.thoughtcrime.securesms.mediasend
 
 import android.content.Context
+import android.location.Location
 import android.net.Uri
-import android.os.Parcelable
 import androidx.preference.PreferenceManager
-import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.ProofJson
+import org.thoughtcrime.securesms.Proofs
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_LOCATION_ENABLED_GLOBAL
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_LOCATION_ENABLED_LOCAL
@@ -22,8 +23,12 @@ import java.io.BufferedOutputStream
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlin.math.abs
 
 object ProofModeUtil {
 
@@ -46,6 +51,60 @@ object ProofModeUtil {
     proofNotary?.let {
       PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NOTARY_ENABLED_GLOBAL, it).apply()
     }
+  }
+
+  fun getTime(draftTime: String): String {
+    return try {
+      val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+
+      formatter.timeZone = TimeZone.getTimeZone("UTC")
+      val value = formatter.parse(draftTime)
+      val dateFormatter = SimpleDateFormat("h:mm a") //this format changeable
+      dateFormatter.timeZone = TimeZone.getDefault()
+      dateFormatter.format(value)
+    } catch (e: Exception) {
+      draftTime
+    }
+  }
+
+  fun convertLongToTime(time: String): String {
+    val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
+    val t = df.parse(time).time
+    val date = Date(t)
+    val format = SimpleDateFormat("h:mm a")
+    return format.format(date)
+  }
+
+  fun convert(latitude: Double, longitude: Double): String {
+    val builder = StringBuilder()
+    if (latitude < 0) {
+      builder.append("S ")
+    } else {
+      builder.append("N ")
+    }
+    val latitudeDegrees: String = Location.convert(abs(latitude), Location.FORMAT_SECONDS)
+    val latitudeSplit = latitudeDegrees.split(":").toTypedArray()
+    builder.append(latitudeSplit[0])
+    builder.append("°")
+    builder.append(latitudeSplit[1])
+    builder.append("'")
+    builder.append(latitudeSplit[2])
+    builder.append("\"")
+    builder.append(" ")
+    if (longitude < 0) {
+      builder.append("W ")
+    } else {
+      builder.append("E ")
+    }
+    val longitudeDegrees: String = Location.convert(abs(longitude), Location.FORMAT_SECONDS)
+    val longitudeSplit = longitudeDegrees.split(":").toTypedArray()
+    builder.append(longitudeSplit[0])
+    builder.append("°")
+    builder.append(longitudeSplit[1])
+    builder.append("'")
+    builder.append(longitudeSplit[2])
+    builder.append("\"")
+    return builder.toString()
   }
 
   fun setProofSettingsLocal(
@@ -159,7 +218,7 @@ object ProofModeUtil {
     }
   }
 
-  fun saveJson(file: File, context: Context) {
+  private fun saveJson(file: File, context: Context) {
     val notaryGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NOTARY_ENABLED_GLOBAL, true)
     val locationGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_LOCATION_ENABLED_GLOBAL, true)
     val phoneGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_PHONE_ENABLED_GLOBAL, true)
@@ -185,56 +244,23 @@ object ProofModeUtil {
     val json = JSONObject(inputString)
     val proofJson = ProofJson(
       longitude = json.getString("Location.Longitude"),
-      latitude = json.getString("Location.Altitude"),
+      latitude = json.getString("Location.Latitude"),
       time = json.getString("Proof Generated"),
       location = json.getString("Location.Bearing"),
       proofsList = proofs
     )
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
-    Log.e("JSONN:", proofJson.toString())
   }
+
 }
 
-@Parcelize
-data class ProofJson(
-  val longitude: String,
-  val latitude: String,
-  val time: String,
-  val location: String,
-  val proofsList: List<Proofs>
-): Parcelable {
-
-
-  fun toJsonObject(): JSONObject {
-    val json = JSONObject()
-    json.put("longitude", longitude)
-    json.put("latitude", latitude)
-    json.put("time", time)
-    json.put("location", location)
-    json.put("proofsList", proofsList.toString())
-    return json
-  }
-}
-
-fun JSONObject.proofFromJson(): ProofJson {
-  val proofList = arrayListOf<Proofs>()
-  if (!getString("proofsList").trim().isNullOrEmpty()) {
-    getString("proofsList").dropLast(1).drop(1).split(",").map {
-      proofList.add(Proofs.valueOf(it.trim()))
-    }
-  }
-  return ProofJson(
-    longitude = getString("longitude"),
-    latitude = getString("latitude"),
-    time = getString("time"),
-    location = getString("location"),
-    proofsList = proofList
-  )
-}
-
-enum class Proofs {
-  DEVICE_ID,
-  NOTARIES,
-  LOCATION,
-  NETWORK
+fun parseProofObjectFromString(proof: String): ArrayList<String> {
+  val resultList = arrayListOf<String>()
+  val takenText = proof.substringAfter("\n").substringBefore("\n")
+  val nearText = proof.substringAfter("Near:").substringBefore("\n")
+  val proofsList = proof.substringAfter("Proofs:").substringBefore("\n")
+  resultList.add(takenText)
+  resultList.add(nearText)
+  resultList.add(proofsList)
+  return resultList
 }
