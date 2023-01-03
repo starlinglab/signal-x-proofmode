@@ -21,6 +21,7 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -48,6 +49,7 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +63,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.util.LinkifyCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.annimon.stream.Stream;
@@ -202,7 +205,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
   @Nullable protected ViewGroup                  contactPhotoHolder;
   @Nullable private   QuoteView                  quoteView;
             private   EmojiTextView              bodyText;
-            private   ConstraintLayout           proofText;
+            private   ConstraintLayout           proofLayout;
             private   ConversationItemFooter     footer;
   @Nullable private   ConversationItemFooter     stickerFooter;
   @Nullable private   TextView                   groupSender;
@@ -305,9 +308,9 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
 
     initializeAttributes();
 
-    this.bodyText                  =                    findViewById(R.id.conversation_item_body);
-    this.proofText                 =                    findViewById(R.id.proof_layout);
-    this.footer                    =                    findViewById(R.id.conversation_item_footer);
+    this.bodyText    =                    findViewById(R.id.conversation_item_body);
+    this.proofLayout =                    findViewById(R.id.proof_layout);
+    this.footer      =                    findViewById(R.id.conversation_item_footer);
     this.stickerFooter             =                    findViewById(R.id.conversation_item_sticker_footer);
     this.groupSender               =                    findViewById(R.id.group_message_sender);
     this.alertView                 =                    findViewById(R.id.indicators_parent);
@@ -821,12 +824,6 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       setAudioViewTint(messageRecord);
     }
 
-    /**
-     * HERE WE CHANGE BUBBLE COLOR
-     */
-//    bodyText.setVisibility(View.GONE);
-//    proofText.setVisibility(View.VISIBLE);
-//    bodyBubble.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
 
     if (hasWallpaper) {
       replyIcon.setBackgroundResource(R.drawable.wallpaper_message_decoration_background);
@@ -1051,15 +1048,31 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
        */
 
       if (styledText.toString().startsWith("ProofMode info")) {
+        if (!messageRecord.isOutgoing()) {
+          TextView  timeText = proofLayout.findViewById(R.id.time_text);
+          ImageView timeImage = proofLayout.findViewById(R.id.photo_icon);
+          ImageView  locationImage = proofLayout.findViewById(R.id.location_icon);
+          TextView locationText = proofLayout.findViewById(R.id.location_text);
+          ImageView proofImage = proofLayout.findViewById(R.id.proof_icon);
+          TextView pText = proofLayout.findViewById(R.id.proof_text);
+          timeText.setTextColor(ContextCompat.getColor(context, R.color.black));
+          locationText.setTextColor(ContextCompat.getColor(context, R.color.black));
+          pText.setTextColor(ContextCompat.getColor(context, R.color.black));
+          ImageViewCompat.setImageTintList(timeImage, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black)));
+          ImageViewCompat.setImageTintList(locationImage, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black)));
+          ImageViewCompat.setImageTintList(proofImage, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black)));
+        }
         bodyText.setVisibility(View.GONE);
-        proofText.setVisibility(View.VISIBLE);
+        proofLayout.setVisibility(View.VISIBLE);
         ArrayList<String> textList = parseProofObjectFromString(String.valueOf(styledText));
-        TextView timeText = proofText.findViewById(R.id.time_text);
-        timeText.setText(textList.get(0));
-        TextView locationText = proofText.findViewById(R.id.location_text);
-        locationText.setText("Near: " + textList.get(1));
-        TextView proofs = proofText.findViewById(R.id.proof_text);
-        proofs.setText("Proofs: " + textList.get(2));
+        if (textList.size() == 3) {
+          TextView timeText = proofLayout.findViewById(R.id.time_text);
+          timeText.setText(textList.get(0));
+          TextView locationText = proofLayout.findViewById(R.id.location_text);
+          locationText.setText("Near: " + textList.get(1));
+          TextView proofs = proofLayout.findViewById(R.id.proof_text);
+          proofs.setText("Proofs: " + textList.get(2));
+        }
       } else {
         bodyText.setText(StringUtil.trim(styledText));
         bodyText.setVisibility(View.VISIBLE);

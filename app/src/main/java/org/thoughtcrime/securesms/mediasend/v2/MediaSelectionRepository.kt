@@ -103,7 +103,7 @@ class MediaSelectionRepository(context: Context) {
         Media(
           requireNotNull(Uri.fromFile(file)),
           MediaUtil.OCTET,
-          "",
+          selectedMedia[0].proofHash,
           System.currentTimeMillis(),
           0,
           0,
@@ -284,10 +284,20 @@ class MediaSelectionRepository(context: Context) {
       val newBody = if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)) {
         val proofObject = JSONObject(PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()).proofFromJson()
         val proofListString = proofObject.proofsList.map { it.title }.toString().dropLast(1).drop(1)
+        val latitude = try {
+          proofObject.latitude.toDouble()
+        } catch (ex: Exception) {
+          0.0
+        }
+        val longitude = try {
+          proofObject.longitude.toDouble()
+        } catch (ex: Exception) {
+          0.0
+        }
         Log.e("OBJECT:", "$proofObject")
         val headerString = "ProofMode info: \n" +
         "Taken: ${ProofModeUtil.convertLongToTime(proofObject.time)} UTC" +
-        "\nNear: ${ProofModeUtil.convert(proofObject.latitude.toDouble(), proofObject.longitude.toDouble())}" +
+        "\nNear: ${ProofModeUtil.convert(latitude, longitude)}" +
         "\nProofs: $proofListString" +
         "\nProofs were checked and verified"
         headerString + "\n" + body

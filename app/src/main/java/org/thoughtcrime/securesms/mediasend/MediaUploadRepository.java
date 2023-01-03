@@ -215,8 +215,7 @@ public class MediaUploadRepository {
     } else if (MediaUtil.isTextType(media.getMimeType())) {
       return new TextSlide(context, media.getUri(), null, media.getSize()).asAttachment();
     } else if (MediaUtil.isDocType(media.getMimeType())) {
-      String name = DateFormat.getInstance().format(media.getDate());
-      return new DocumentSlide(context, media.getUri(), "application/octet-stream", media.getSize(), name).asAttachment();
+      return new DocumentSlide(context, media.getUri(), "application/octet-stream", media.getSize(), media.getProofHash() + ".zip").asAttachment();
     } else {
       throw new AssertionError("Unexpected mimeType: " + media.getMimeType());
     }
