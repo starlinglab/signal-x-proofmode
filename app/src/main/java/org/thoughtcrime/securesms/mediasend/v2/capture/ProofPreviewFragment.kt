@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -16,7 +17,6 @@ import org.thoughtcrime.securesms.mediasend.setOnClickListenerWithThrottle
 class ProofPreviewFragment : Fragment(R.layout.proof_mode_preview) {
 
   private lateinit var binding: ProofModePreviewBinding
-
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
     binding = ProofModePreviewBinding.inflate(inflater, container, false)
@@ -33,42 +33,40 @@ class ProofPreviewFragment : Fragment(R.layout.proof_mode_preview) {
 
     val notaryGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NOTARY_ENABLED_GLOBAL, true)
     val locationGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_LOCATION_ENABLED_GLOBAL, true)
-    val phoneGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_PHONE_ENABLED_GLOBAL, true)
-    val networkGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NETWORK_ENABLED_GLOBAL, true)
+    val networkGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NETWORK_AND_PHONE_ENABLED_GLOBAL, true)
+
+    val isNotaryExist = PreferenceManager.getDefaultSharedPreferences(context).contains(ProofConstants.IS_PROOF_NOTARY_ENABLED_LOCAL)
+    val isLocationExist = PreferenceManager.getDefaultSharedPreferences(context).contains(ProofConstants.IS_PROOF_LOCATION_ENABLED_LOCAL)
+    val isNetworkAndPhoneExist = PreferenceManager.getDefaultSharedPreferences(context).contains(ProofConstants.IS_PROOF_NETWORK_AND_PHONE_ENABLED_LOCAL)
+
     val notaryLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NOTARY_ENABLED_LOCAL, true)
     val locationLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_LOCATION_ENABLED_LOCAL, true)
-    val phoneLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_PHONE_ENABLED_LOCAL, true)
-    val networkLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NETWORK_ENABLED_LOCAL, true)
-    val resultNotary = if (notaryGlobal == notaryLocal) notaryGlobal else notaryLocal
-    val resultLocation = if (locationGlobal == locationLocal) locationGlobal else locationLocal
-    val resultPhone = if (phoneGlobal == phoneLocal) phoneGlobal else phoneLocal
-    val resultNetwork = if (networkGlobal == networkLocal) networkGlobal else networkLocal
+    val networkLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NETWORK_AND_PHONE_ENABLED_LOCAL, true)
 
-    binding.notarySwitch.isChecked = resultNotary
-    binding.locationSwitch.isChecked = resultLocation
-    binding.phoneSwitch.isChecked = resultPhone
-    binding.networkSwitch.isChecked = resultNetwork
+    val resultNotary = if (isNotaryExist) notaryLocal else notaryGlobal
+    val resultLocation = if (isLocationExist) locationLocal else locationGlobal
+    val resultNetworkAndPhone = if (isNetworkAndPhoneExist) networkLocal else networkGlobal
 
-    binding.notaryLayout.setOnClickListenerWithThrottle {
-      binding.notarySwitch.performClick()
+    binding.checkButtonBasic.isChecked = resultLocation
+    binding.checkButtonExtended.isChecked = resultNetworkAndPhone
+    binding.checkButtonThird.isChecked = resultNotary
+
+    binding.basicLayout.setOnClickListener {
+      binding.checkButtonBasic.performClick()
     }
-    binding.locationLayout.setOnClickListenerWithThrottle {
-      binding.locationSwitch.performClick()
+    binding.extendedLayout.setOnClickListener {
+      binding.checkButtonExtended.performClick()
     }
-    binding.phoneLayout.setOnClickListenerWithThrottle {
-      binding.phoneSwitch.performClick()
-    }
-    binding.networkLayout.setOnClickListenerWithThrottle {
-      binding.networkSwitch.performClick()
+    binding.thirdLayout.setOnClickListener {
+      binding.checkButtonThird.performClick()
     }
 
     binding.confirmButton.setOnClickListenerWithThrottle {
       ProofModeUtil.setProofSettingsLocal(
         context = requireContext(),
-        proofNotary = binding.notarySwitch.isChecked,
-        proofLocation = binding.locationSwitch.isChecked,
-        proofDeviceIds = binding.phoneSwitch.isChecked,
-        proofNetwork = binding.networkSwitch.isChecked
+        proofNotary = binding.checkButtonThird.isChecked,
+        proofLocation = binding.checkButtonBasic.isChecked,
+        proofNetwork = binding.checkButtonExtended.isChecked
       )
       findNavController().navigateUp()
     }

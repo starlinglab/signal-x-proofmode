@@ -5455,5 +5455,9 @@
     <string name="buttons_description">Use cryptography to establish the authenticity and preserve images</string>
     <string name="activate_proofmode_button_title">Activate Proofmode</string>
     <string name="disable_button_title">Disable</string>
+    <string name="cid_signature">CID and Signature</string>
+    <string name="device_text">e.g. Wifi or Mobile LTE</string>
+    <string name="version_text">e.g. Samsung Galaxy X, Android v12</string>
+    <string name="noteries_text">Notary: MobileCoin TX ID</string>
 
 </resources>
