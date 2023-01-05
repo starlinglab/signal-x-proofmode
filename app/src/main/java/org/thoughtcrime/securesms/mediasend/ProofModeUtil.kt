@@ -47,25 +47,11 @@ object ProofModeUtil {
     }
   }
 
-  fun getTime(draftTime: String): String {
-    return try {
-      val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-
-      formatter.timeZone = TimeZone.getTimeZone("UTC")
-      val value = formatter.parse(draftTime)
-      val dateFormatter = SimpleDateFormat("yyyy-MM-dd - h:mm a") //this format changeable
-      dateFormatter.timeZone = TimeZone.getDefault()
-      dateFormatter.format(value)
-    } catch (e: Exception) {
-      draftTime
-    }
-  }
-
   fun convertLongToTime(time: String): String {
     val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
     val t = df.parse(time).time
     val date = Date(t)
-    val format = SimpleDateFormat("h:mm a")
+    val format = SimpleDateFormat("yyyy-MM-dd h:mm a")
     return format.format(date)
   }
 
