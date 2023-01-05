@@ -53,7 +53,7 @@ object ProofModeUtil {
 
       formatter.timeZone = TimeZone.getTimeZone("UTC")
       val value = formatter.parse(draftTime)
-      val dateFormatter = SimpleDateFormat("h:mm a") //this format changeable
+      val dateFormatter = SimpleDateFormat("yyyy-MM-dd - h:mm a") //this format changeable
       dateFormatter.timeZone = TimeZone.getDefault()
       dateFormatter.format(value)
     } catch (e: Exception) {
@@ -200,8 +200,8 @@ object ProofModeUtil {
 
       val keyEntry = ZipEntry("pubkey.asc");
       zos.putNextEntry(keyEntry);
-      var publicKey = ProofMode.getPublicKey(context)
-      zos.write(publicKey.toByteArray())
+      var publicKey = ProofMode.getPublicKeyString(context)
+      zos.write(publicKey.orEmpty().toByteArray())
 
       return outputZipFile
     }
