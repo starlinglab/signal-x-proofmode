@@ -27,22 +27,19 @@ class ProofModeFragment : Fragment(R.layout.proof_mode_fragment) {
   private fun setupView() {
     binding.notarySwitch.isChecked = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean(ProofConstants.IS_PROOF_NOTARY_ENABLED_GLOBAL, true)
     binding.locationSwitch.isChecked = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean(ProofConstants.IS_PROOF_LOCATION_ENABLED_GLOBAL, true)
-    binding.phoneSwitch.isChecked = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean(ProofConstants.IS_PROOF_PHONE_ENABLED_GLOBAL, true)
-    binding.networkSwitch.isChecked = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean(ProofConstants.IS_PROOF_NETWORK_ENABLED_GLOBAL, true)
+    binding.networkSwitch.isChecked = PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean(ProofConstants.IS_PROOF_NETWORK_AND_PHONE_ENABLED_GLOBAL, true)
     binding.toolbar.setNavigationOnClickListener {
       findNavController().navigateUp()
     }
     binding.offLayout.setOnClickListenerWithThrottle {
       ProofModeUtil.setProofSettingsGlobal(
         context = requireContext(),
-        proofDeviceIds = false,
         proofLocation = false,
         proofNetwork = false,
         proofNotary = false
       )
       binding.notarySwitch.isChecked = false
       binding.locationSwitch.isChecked = false
-      binding.phoneSwitch.isChecked = false
       binding.networkSwitch.isChecked = false
     }
     binding.notaryLayout.setOnClickListenerWithThrottle {
@@ -50,9 +47,6 @@ class ProofModeFragment : Fragment(R.layout.proof_mode_fragment) {
     }
     binding.locationLayout.setOnClickListenerWithThrottle {
       binding.locationSwitch.performClick()
-    }
-    binding.phoneLayout.setOnClickListenerWithThrottle {
-      binding.phoneSwitch.performClick()
     }
     binding.networkLayout.setOnClickListenerWithThrottle {
       binding.networkSwitch.performClick()
@@ -68,12 +62,6 @@ class ProofModeFragment : Fragment(R.layout.proof_mode_fragment) {
       ProofModeUtil.setProofSettingsGlobal(
         context = requireContext(),
         proofLocation = isChecked
-      )
-    }
-    binding.phoneSwitch.setOnCheckedChangeListener { _, isChecked ->
-      ProofModeUtil.setProofSettingsGlobal(
-        context = requireContext(),
-        proofDeviceIds = isChecked
       )
     }
     binding.networkSwitch.setOnCheckedChangeListener { _, isChecked ->

@@ -30,8 +30,18 @@
             app:layout_constraintStart_toStartOf="@id/image_placeholder"
             app:layout_constraintTop_toTopOf="@id/image_placeholder" />
 
+        <TextView
+            android:id="@+id/basic_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="Basic"
+            android:textAppearance="@style/Signal.Text.BodyMedium"
+            app:layout_constraintBottom_toTopOf="@id/basic_layout"
+            app:layout_constraintStart_toStartOf="@id/basic_layout" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/notary_layout"
+            android:id="@+id/basic_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
@@ -43,146 +53,235 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/image_placeholder">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <CheckBox
+                android:id="@+id/check_button_basic"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:button="@null"
+                android:gravity="center"
+                android:backgroundTint="@color/text_primary_color"
+                android:background="@drawable/checkbox_custom_selector"
+                android:buttonTint="@color/text_primary_color"
                 android:clickable="false"
                 android:focusable="false"
-                android:text="Include Notary"
-                android:textAppearance="@style/Signal.Text.BodyLarge"
-                android:textColor="@color/text_primary_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Switch
-                android:id="@+id/notary_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/location_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/ic_location_on_white_24dp"
+                android:tint="@color/text_primary_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/location_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="Near your location"
+                android:textAppearance="@style/Signal.Text.BodyLarge"
+                app:layout_constraintEnd_toStartOf="@id/check_button_basic"
+                app:layout_constraintStart_toEndOf="@id/location_icon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ci_cd_signature"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/ic_document_small"
+                android:tint="@color/text_primary_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/location_text" />
+
+            <TextView
+                android:id="@+id/ci_cd_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="@string/hash_signature"
+                android:textAppearance="@style/Signal.Text.BodyLarge"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/check_button_basic"
+                app:layout_constraintStart_toEndOf="@id/ci_cd_signature"
+                app:layout_constraintTop_toBottomOf="@id/location_text" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/extended_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="20dp"
+            android:text="Extended"
+            android:textAppearance="@style/Signal.Text.BodyMedium"
+            app:layout_constraintStart_toStartOf="@id/basic_layout"
+            app:layout_constraintTop_toBottomOf="@id/basic_layout" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/location_layout"
+            android:id="@+id/extended_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
+            android:layout_margin="12dp"
             android:background="@drawable/rounded_corners"
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notary_layout">
+            app:layout_constraintTop_toBottomOf="@id/extended_header">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <CheckBox
+                android:id="@+id/check_button_extended"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:button="@null"
+                android:gravity="center"
+                android:backgroundTint="@color/text_primary_color"
+                android:background="@drawable/checkbox_custom_selector"
+                android:buttonTint="@color/text_primary_color"
                 android:clickable="false"
                 android:focusable="false"
-                android:text="Include Location Data"
-                android:textAppearance="@style/Signal.Text.BodyLarge"
-                android:textColor="@color/text_primary_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Switch
-                android:id="@+id/location_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/network_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/ic_network_24"
+                android:tint="@color/text_primary_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/network_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="@string/device_text"
+                android:textAppearance="@style/Signal.Text.BodyLarge"
+                app:layout_constraintEnd_toStartOf="@id/check_button_extended"
+                app:layout_constraintStart_toEndOf="@id/network_icon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/phone_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/ic_phone_24"
+                android:tint="@color/text_primary_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/network_text" />
+
+            <TextView
+                android:id="@+id/phone_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="@string/version_text"
+                android:textAppearance="@style/Signal.Text.BodyLarge"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/check_button_extended"
+                app:layout_constraintStart_toEndOf="@id/phone_icon"
+                app:layout_constraintTop_toBottomOf="@id/network_text" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/third_party_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="20dp"
+            android:text="Third-party notaries"
+            android:textAppearance="@style/Signal.Text.BodyMedium"
+            app:layout_constraintStart_toStartOf="@id/third_layout"
+            app:layout_constraintTop_toBottomOf="@id/extended_layout" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/phone_layout"
+            android:id="@+id/third_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
+            android:layout_margin="12dp"
             android:background="@drawable/rounded_corners"
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/location_layout">
+            app:layout_constraintTop_toBottomOf="@id/third_party_header">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <CheckBox
+                android:id="@+id/check_button_third"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:button="@null"
+                android:gravity="center"
+                android:backgroundTint="@color/text_primary_color"
+                android:background="@drawable/checkbox_custom_selector"
+                android:buttonTint="@color/text_primary_color"
                 android:clickable="false"
                 android:focusable="false"
-                android:text="Include Phone ID"
-                android:textAppearance="@style/Signal.Text.BodyLarge"
-                android:textColor="@color/text_primary_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Switch
-                android:id="@+id/phone_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/network_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rounded_corners"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/phone_layout">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <ImageView
+                android:id="@+id/notary_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
                 android:clickable="false"
                 android:focusable="false"
-                android:text="Include Network"
-                android:textAppearance="@style/Signal.Text.BodyLarge"
-                android:textColor="@color/text_primary_color"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/ic_devices_white"
+                android:tint="@color/text_primary_color"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Switch
-                android:id="@+id/network_switch"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/notary_text"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
                 android:clickable="false"
                 android:focusable="false"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/noteries_text"
+                android:textAppearance="@style/Signal.Text.BodyLarge"
+                app:layout_constraintEnd_toStartOf="@id/check_button_third"
+                app:layout_constraintStart_toEndOf="@id/notary_icon"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -199,7 +298,7 @@
             android:textColor="@color/white"
             app:layout_constraintEnd_toStartOf="@id/share_robust_button"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/network_layout" />
+            app:layout_constraintTop_toBottomOf="@id/third_layout" />
 
         <Button
             android:id="@+id/share_robust_button"
@@ -213,14 +312,14 @@
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/share_basic_button"
-            app:layout_constraintTop_toBottomOf="@id/network_layout" />
+            app:layout_constraintTop_toBottomOf="@id/third_layout" />
 
         <ImageView
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="60dp"
             android:src="@drawable/ic_cancel_36"
@@ -233,8 +332,8 @@
             android:id="@+id/confirm_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="60dp"
             android:src="@drawable/ic_confirm_36"

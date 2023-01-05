@@ -11,12 +11,10 @@ import org.thoughtcrime.securesms.Proofs
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_LOCATION_ENABLED_GLOBAL
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_LOCATION_ENABLED_LOCAL
-import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_NETWORK_ENABLED_GLOBAL
-import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_NETWORK_ENABLED_LOCAL
+import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_NETWORK_AND_PHONE_ENABLED_GLOBAL
+import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_NETWORK_AND_PHONE_ENABLED_LOCAL
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_NOTARY_ENABLED_GLOBAL
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_NOTARY_ENABLED_LOCAL
-import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_PHONE_ENABLED_GLOBAL
-import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_PHONE_ENABLED_LOCAL
 import org.thoughtcrime.securesms.mediasend.ProofConstants.PROOF_OBJECT
 import org.witness.proofmode.ProofMode
 import java.io.BufferedOutputStream
@@ -34,19 +32,15 @@ object ProofModeUtil {
 
   fun setProofSettingsGlobal(
     context: Context,
-    proofDeviceIds: Boolean? = null,
     proofLocation: Boolean? = null,
     proofNetwork: Boolean? = null,
     proofNotary: Boolean? = null
   ) {
-    proofDeviceIds?.let {
-      PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_PHONE_ENABLED_GLOBAL, it).apply()
-    }
     proofLocation?.let {
       PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_LOCATION_ENABLED_GLOBAL, it).apply()
     }
     proofNetwork?.let {
-      PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NETWORK_ENABLED_GLOBAL, it).apply()
+      PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NETWORK_AND_PHONE_ENABLED_GLOBAL, it).apply()
     }
     proofNotary?.let {
       PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NOTARY_ENABLED_GLOBAL, it).apply()
@@ -113,19 +107,15 @@ object ProofModeUtil {
 
   fun setProofSettingsLocal(
     context: Context,
-    proofDeviceIds: Boolean? = null,
     proofLocation: Boolean? = null,
     proofNetwork: Boolean? = null,
     proofNotary: Boolean? = null
   ) {
-    proofDeviceIds?.let {
-      PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_PHONE_ENABLED_LOCAL, it).apply()
-    }
     proofLocation?.let {
       PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_LOCATION_ENABLED_LOCAL, it).apply()
     }
     proofNetwork?.let {
-      PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NETWORK_ENABLED_LOCAL, it).apply()
+      PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NETWORK_AND_PHONE_ENABLED_LOCAL, it).apply()
     }
     proofNotary?.let {
       PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NOTARY_ENABLED_LOCAL, it).apply()
@@ -135,8 +125,7 @@ object ProofModeUtil {
   fun clearLocalSettings(context: Context) {
     PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NOTARY_ENABLED_LOCAL, true).apply()
     PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_LOCATION_ENABLED_LOCAL, true).apply()
-    PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_PHONE_ENABLED_LOCAL, true).apply()
-    PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NETWORK_ENABLED_LOCAL, true).apply()
+    PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(IS_PROOF_NETWORK_AND_PHONE_ENABLED_LOCAL, true).apply()
     PreferenceManager.getDefaultSharedPreferences(context).edit().remove(PROOF_OBJECT).apply()
   }
 
@@ -166,20 +155,16 @@ object ProofModeUtil {
     PreferenceManager.getDefaultSharedPreferences(context).edit().remove(PROOF_OBJECT).apply()
     val notaryGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NOTARY_ENABLED_GLOBAL, true)
     val locationGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_LOCATION_ENABLED_GLOBAL, true)
-    val phoneGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_PHONE_ENABLED_GLOBAL, true)
-    val networkGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_ENABLED_GLOBAL, true)
+    val networkAndPhoneGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_AND_PHONE_ENABLED_GLOBAL, true)
     val notaryLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NOTARY_ENABLED_LOCAL, true)
     val locationLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_LOCATION_ENABLED_LOCAL, true)
-    val phoneLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_PHONE_ENABLED_LOCAL, true)
-    val networkLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_ENABLED_LOCAL, true)
+    val networkLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_AND_PHONE_ENABLED_LOCAL, true)
     val resultNotary = if (notaryGlobal == notaryLocal) notaryGlobal else notaryLocal
     val resultLocation = if (locationGlobal == locationLocal) locationGlobal else locationLocal
-    val resultPhone = if (phoneGlobal == phoneLocal) phoneGlobal else phoneLocal
-    val resultNetwork = if (networkGlobal == networkLocal) networkGlobal else networkLocal
+    val resultNetwork = if (networkAndPhoneGlobal == networkLocal) networkAndPhoneGlobal else networkLocal
 
     setProofPoints(
       context = context,
-      proofDeviceIds = resultPhone,
       proofLocation = resultLocation,
       proofNetwork = resultNetwork,
       proofNotary = resultNotary
@@ -225,22 +210,18 @@ object ProofModeUtil {
   private fun saveJson(file: File, context: Context) {
     val notaryGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NOTARY_ENABLED_GLOBAL, true)
     val locationGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_LOCATION_ENABLED_GLOBAL, true)
-    val phoneGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_PHONE_ENABLED_GLOBAL, true)
-    val networkGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_ENABLED_GLOBAL, true)
+    val networkAndPhoneGlobal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_AND_PHONE_ENABLED_GLOBAL, true)
     val notaryLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NOTARY_ENABLED_LOCAL, true)
     val locationLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_LOCATION_ENABLED_LOCAL, true)
-    val phoneLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_PHONE_ENABLED_LOCAL, true)
-    val networkLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_ENABLED_LOCAL, true)
+    val networkAndPhoneLocal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_NETWORK_AND_PHONE_ENABLED_LOCAL, true)
     val resultNotary = if (notaryGlobal == notaryLocal) notaryGlobal else notaryLocal
     val resultLocation = if (locationGlobal == locationLocal) locationGlobal else locationLocal
-    val resultPhone = if (phoneGlobal == phoneLocal) phoneGlobal else phoneLocal
-    val resultNetwork = if (networkGlobal == networkLocal) networkGlobal else networkLocal
+    val resultNetworkAndPhone = if (networkAndPhoneGlobal == networkAndPhoneLocal) networkAndPhoneGlobal else networkAndPhoneLocal
 
     val proofs = arrayListOf<Proofs>()
     if (resultNotary) proofs.add(Proofs.NOTARIES)
-    if (resultPhone) proofs.add(Proofs.DEVICE_ID)
     if (resultLocation) proofs.add(Proofs.LOCATION)
-    if (resultNetwork) proofs.add(Proofs.NETWORK)
+    if (resultNetworkAndPhone) proofs.add(Proofs.NETWORK_AND_PHONE)
 
     Log.e("FILE::", "$file")
     val bufferedReader: BufferedReader = file.bufferedReader()
