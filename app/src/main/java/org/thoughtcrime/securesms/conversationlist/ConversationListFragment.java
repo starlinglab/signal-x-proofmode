@@ -306,13 +306,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     cameraFab.setOnClickListener(v -> {
       PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(SHOW_PROOF, true).apply();
       Permissions.with(this)
-                 .request(
-                     Manifest.permission.CAMERA,
-                     Manifest.permission.READ_EXTERNAL_STORAGE,
-                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                     Manifest.permission.ACCESS_FINE_LOCATION,
-                     Manifest.permission.ACCESS_COARSE_LOCATION
-                 )
+                 .request(Manifest.permission.CAMERA)
                  .ifNecessary()
                  .withRationaleDialog(getString(R.string.ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera), R.drawable.ic_camera_24)
                  .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video))

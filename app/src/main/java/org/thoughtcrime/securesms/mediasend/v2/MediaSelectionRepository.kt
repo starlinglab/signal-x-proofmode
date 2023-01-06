@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.mediasend.v2
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import androidx.annotation.WorkerThread
 import androidx.preference.PreferenceManager
 import io.reactivex.rxjava3.core.Maybe
@@ -305,6 +306,7 @@ class MediaSelectionRepository(context: Context) {
             "Taken: ${ProofModeUtil.convertLongToTime(proofObject.time)} UTC" +
             "\nNear: ${ProofModeUtil.convert(latitude, longitude)}" +
             "\nProofs: $proofListString" +
+            "\nDevice Name: ${proofObject.deviceName} " + "Android v.${Build.VERSION.RELEASE}"
             "\nProofs were checked and verified"
           headerString + "\n" + body
         } else {
