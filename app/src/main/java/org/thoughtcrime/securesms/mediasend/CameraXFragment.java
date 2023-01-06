@@ -69,6 +69,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 import static org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED;
+import static org.thoughtcrime.securesms.mediasend.ProofConstants.SHOW_PROOF;
 
 /**
  * Camera captured implemented using the CameraX SDK, which uses Camera2 under the hood. Should be
@@ -162,7 +163,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
     previewView.setScaleType(PREVIEW_SCALE_TYPE);
     previewView.setController(cameraController);
 
-    onOrientationChanged();
+    onOrientationChanged(savedInstanceState);
 
     view.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
       // Let's assume portrait for now, so 9:16
@@ -235,7 +236,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
                      });
   }
 
-  private void onOrientationChanged() {
+  private void onOrientationChanged(Bundle savedInstanceState) {
     int layout = R.layout.camera_controls_portrait;
 
     int                         resolution = CameraXUtil.getIdealResolution(Resources.getSystem().getDisplayMetrics().widthPixels, Resources.getSystem().getDisplayMetrics().heightPixels);
@@ -247,7 +248,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
 
     controlsContainer.removeAllViews();
     controlsContainer.addView(LayoutInflater.from(getContext()).inflate(layout, controlsContainer, false));
-    initControls();
+    initControls(savedInstanceState);
   }
 
   private void presentRecentItemThumbnail(@Nullable Media media) {
@@ -317,7 +318,7 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
   }
 
   @SuppressLint({ "ClickableViewAccessibility", "MissingPermission" })
-  private void initControls() {
+  private void initControls(Bundle savedInstanceState) {
     View                   flipButton    = requireView().findViewById(R.id.camera_flip_button);
     CameraButtonView       captureButton = requireView().findViewById(R.id.camera_capture_button);
     View                   galleryButton = requireView().findViewById(R.id.camera_gallery_button);
@@ -344,6 +345,26 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
 
     previewView.setScaleType(PREVIEW_SCALE_TYPE);
 
+    boolean showProof = PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean(SHOW_PROOF, false);
+    if (!showProof) {
+      PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(IS_PROOF_ENABLED, false).apply();
+      proofButton.setVisibility(View.GONE);
+    } else {
+      PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(SHOW_PROOF, false).apply();
+      PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(IS_PROOF_ENABLED, true).apply();
+      proofButton.setOnClickListener(view -> {
+        boolean isProofEnabled = PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean(IS_PROOF_ENABLED, true);
+        if (isProofEnabled) {
+          proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock_open_24));
+          PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(IS_PROOF_ENABLED, false).apply();
+        } else {
+          proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock));
+          PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(IS_PROOF_ENABLED, true).apply();
+        }
+      });
+    }
+
+
     cameraController.getInitializationFuture()
                     .addListener(() -> initializeFlipButton(flipButton, flashButton, proofButton), Executors.mainThreadExecutor());
 
@@ -352,18 +373,6 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
     flashButton.setOnFlashModeChangedListener(mode -> {
       cameraController.setImageCaptureFlashMode(mode);
       cameraScreenBrightnessController.onCameraFlashChanged(mode == ImageCapture.FLASH_MODE_ON);
-    });
-
-    PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(IS_PROOF_ENABLED, true).apply();
-    proofButton.setOnClickListener(view -> {
-      boolean isProofEnabled = PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean(IS_PROOF_ENABLED, true);
-      if (isProofEnabled) {
-        proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock_open_24));
-        PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(IS_PROOF_ENABLED, false).apply();
-      } else {
-        proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock));
-        PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(IS_PROOF_ENABLED, true).apply();
-      }
     });
 
     galleryButton.setOnClickListener(
@@ -569,11 +578,13 @@ public class CameraXFragment extends LoggingFragment implements CameraFragment {
         flipButton.startAnimation(animation);
         flashButton.setAutoFlashEnabled(cameraController.getImageCaptureFlashMode() >= ImageCapture.FLASH_MODE_AUTO);
         flashButton.setFlash(cameraController.getImageCaptureFlashMode());
-        proofButton.setVisibility(View.VISIBLE);
-        if (PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean(IS_PROOF_ENABLED, true)) {
-          proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock));
-        } else {
-          proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock_open_24));
+        if (PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean(SHOW_PROOF, false)) {
+          proofButton.setVisibility(View.VISIBLE);
+          if (PreferenceManager.getDefaultSharedPreferences(requireActivity()).getBoolean(IS_PROOF_ENABLED, true)) {
+            proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock));
+          } else {
+            proofButton.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_lock_open_24));
+          }
         }
         cameraScreenBrightnessController.onCameraDirectionChanged(cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA);
       });
