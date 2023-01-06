@@ -61,6 +61,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -186,6 +187,7 @@ import java.util.stream.Collectors;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static org.thoughtcrime.securesms.mediasend.ProofConstants.SHOW_PROOF;
 
 
 public class ConversationListFragment extends MainFragment implements ActionMode.Callback,
@@ -302,8 +304,15 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), NewConversationActivity.class)));
     cameraFab.setOnClickListener(v -> {
+      PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit().putBoolean(SHOW_PROOF, true).apply();
       Permissions.with(this)
-                 .request(Manifest.permission.CAMERA)
+                 .request(
+                     Manifest.permission.CAMERA,
+                     Manifest.permission.READ_EXTERNAL_STORAGE,
+                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                     Manifest.permission.ACCESS_FINE_LOCATION,
+                     Manifest.permission.ACCESS_COARSE_LOCATION
+                 )
                  .ifNecessary()
                  .withRationaleDialog(getString(R.string.ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera), R.drawable.ic_camera_24)
                  .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video))

@@ -4,6 +4,7 @@ import android.os.SystemClock
 import android.view.View
 
 object ProofConstants {
+  const val SHOW_PROOF = "SHOW_PROOF"
   const val IS_PROOF_ENABLED = "IS_PROOF_ENABLED"
   const val IS_PROOF_NOTARY_ENABLED_GLOBAL = "IS_PROOF_NOTARY_ENABLED_GLOBAL"
   const val IS_PROOF_LOCATION_ENABLED_GLOBAL = "IS_PROOF_LOCATION_ENABLED_GLOBAL"
