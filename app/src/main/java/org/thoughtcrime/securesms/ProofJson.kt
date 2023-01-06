@@ -28,8 +28,10 @@ data class ProofJson(
 fun JSONObject.proofFromJson(): ProofJson {
   val proofList = arrayListOf<Proofs>()
   if (!getString("proofsList").trim().isNullOrEmpty()) {
-    getString("proofsList").dropLast(1).drop(1).split(",").map {
-      proofList.add(Proofs.valueOf(it.trim()))
+    if (getString("proofsList").dropLast(1).drop(1).isNotEmpty()) {
+      getString("proofsList").split(",").map {
+        proofList.add(Proofs.valueOf(it.trim()))
+      }
     }
   }
   return ProofJson(

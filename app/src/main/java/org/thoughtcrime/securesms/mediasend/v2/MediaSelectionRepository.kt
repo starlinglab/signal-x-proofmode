@@ -282,25 +282,35 @@ class MediaSelectionRepository(context: Context) {
         else -> StoryType.NONE
       }
       val newBody = if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)) {
-        val proofObject = JSONObject(PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()).proofFromJson()
-        val proofListString = proofObject.proofsList.map { it.title }.toString().dropLast(1).drop(1)
-        val latitude = try {
-          proofObject.latitude.toDouble()
-        } catch (ex: Exception) {
-          0.0
+        val proofJson = PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()
+        if (proofJson.isNotEmpty()) {
+          val proofObject = JSONObject(proofJson).proofFromJson()
+          val proofListString = if (proofObject.proofsList.isNotEmpty()) {
+            proofObject.proofsList.map { it.title }.toString().dropLast(1).drop(1)
+          } else {
+            "None"
+          }
+          val latitude = try {
+            proofObject.latitude.toDouble()
+          } catch (ex: Exception) {
+            0.0
+          }
+          val longitude = try {
+            proofObject.longitude.toDouble()
+          } catch (ex: Exception) {
+            0.0
+          }
+          Log.e("OBJECT:", "$proofObject")
+          val headerString = "ProofMode info: \n" +
+            "Taken: ${ProofModeUtil.convertLongToTime(proofObject.time)} UTC" +
+            "\nNear: ${ProofModeUtil.convert(latitude, longitude)}" +
+            "\nProofs: $proofListString" +
+            "\nProofs were checked and verified"
+          headerString + "\n" + body
+        } else {
+          "Taken: ${ProofModeUtil.convertLongToTime(System.currentTimeMillis().toString())} UTC" +
+          "\nProofs were checked and verified"
         }
-        val longitude = try {
-          proofObject.longitude.toDouble()
-        } catch (ex: Exception) {
-          0.0
-        }
-        Log.e("OBJECT:", "$proofObject")
-        val headerString = "ProofMode info: \n" +
-        "Taken: ${ProofModeUtil.convertLongToTime(proofObject.time)} UTC" +
-        "\nNear: ${ProofModeUtil.convert(latitude, longitude)}" +
-        "\nProofs: $proofListString" +
-        "\nProofs were checked and verified"
-        headerString + "\n" + body
       } else {
         body
       }
