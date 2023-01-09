@@ -11,6 +11,7 @@ data class ProofJson(
   val time: String,
   val location: String,
   val deviceName: String,
+  val networkType: String,
   val proofsList: List<Proofs>
 ): Parcelable {
 
@@ -22,6 +23,7 @@ data class ProofJson(
     json.put("time", time)
     json.put("location", location)
     json.put("deviceName", deviceName)
+    json.put("networkType", networkType)
     json.put("proofsList", proofsList.toString())
     return json
   }
@@ -44,6 +46,7 @@ fun JSONObject.proofFromJson(): ProofJson {
     time = getString("time"),
     location = getString("location"),
     deviceName = getString("deviceName"),
+    networkType = getString("networkType"),
     proofsList = proofList
   )
 }

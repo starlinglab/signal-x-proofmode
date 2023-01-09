@@ -1736,7 +1736,7 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
     }
 
     @Override public void onSeeMoreClick(ProofMessage proofMessage) {
-      startActivity(ProofSeeMoreActivity.createIntent(requireContext()));
+      startActivity(ProofSeeMoreActivity.createIntent(requireContext(), proofMessage));
     }
 
     @Override

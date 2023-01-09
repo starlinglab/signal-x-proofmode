@@ -30,16 +30,6 @@
             app:layout_constraintStart_toStartOf="@id/image_placeholder"
             app:layout_constraintTop_toTopOf="@id/image_placeholder" />
 
-        <TextView
-            android:id="@+id/basic_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:text="Basic"
-            android:textAppearance="@style/Signal.Text.BodyMedium"
-            app:layout_constraintBottom_toTopOf="@id/basic_layout"
-            app:layout_constraintStart_toStartOf="@id/basic_layout" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/basic_layout"
             android:layout_width="0dp"
@@ -54,19 +44,19 @@
             app:layout_constraintTop_toBottomOf="@id/image_placeholder">
 
             <ImageView
-                android:id="@+id/location_icon"
+                android:id="@+id/taken_icon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="5dp"
                 android:clickable="false"
                 android:focusable="false"
-                android:src="@drawable/ic_location_on_white_24dp"
+                android:src="@drawable/ic_baseline_access_time_filled_24"
                 android:tint="@color/text_primary_color"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/location_text"
+                android:id="@+id/taken_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -74,11 +64,38 @@
                 android:layout_marginEnd="10dp"
                 android:clickable="false"
                 android:focusable="false"
-                android:text="Near your location"
+                android:text="Taken"
                 android:textAppearance="@style/Signal.Text.BodyLarge"
-                app:layout_constraintEnd_toStartOf="@id/check_button_basic"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/location_icon"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/location_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/ic_location_on_white_24dp"
+                android:tint="@color/text_primary_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/taken_text" />
+
+            <TextView
+                android:id="@+id/location_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="Near your location"
+                android:textAppearance="@style/Signal.Text.BodyLarge"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/location_icon"
+                app:layout_constraintTop_toBottomOf="@id/taken_text" />
 
             <ImageView
                 android:id="@+id/ci_cd_signature"
@@ -104,7 +121,6 @@
                 android:text="@string/hash_signature"
                 android:textAppearance="@style/Signal.Text.BodyLarge"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/check_button_basic"
                 app:layout_constraintStart_toEndOf="@id/ci_cd_signature"
                 app:layout_constraintTop_toBottomOf="@id/location_text" />
 
@@ -112,7 +128,7 @@
                 android:id="@+id/network_icon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="20dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:src="@drawable/ic_network_24"
@@ -125,13 +141,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:text="@string/device_text"
                 android:textAppearance="@style/Signal.Text.BodyLarge"
-                app:layout_constraintEnd_toStartOf="@id/check_button_extended"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/network_icon"
                 app:layout_constraintTop_toBottomOf="@id/ci_cd_text" />
 
@@ -142,7 +158,7 @@
                 android:layout_marginTop="20dp"
                 android:clickable="false"
                 android:focusable="false"
-                android:src="@drawable/ic_phone_24"
+                android:src="@drawable/ic_device_info_24"
                 android:tint="@color/text_primary_color"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/network_text" />
@@ -159,7 +175,6 @@
                 android:text="@string/version_text"
                 android:textAppearance="@style/Signal.Text.BodyLarge"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/check_button_extended"
                 app:layout_constraintStart_toEndOf="@id/phone_icon"
                 app:layout_constraintTop_toBottomOf="@id/network_text" />
 
@@ -170,7 +185,7 @@
                 android:layout_marginTop="20dp"
                 android:clickable="false"
                 android:focusable="false"
-                android:src="@drawable/ic_devices_white"
+                android:src="@drawable/ic_baseline_devices_24"
                 android:tint="@color/text_primary_color"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/phone_text" />
@@ -186,7 +201,7 @@
                 android:focusable="false"
                 android:text="@string/noteries_text"
                 android:textAppearance="@style/Signal.Text.BodyLarge"
-                app:layout_constraintEnd_toStartOf="@id/check_button_third"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/notary_icon"
                 app:layout_constraintTop_toBottomOf="@+id/phone_text" />
 

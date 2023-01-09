@@ -1,66 +1,56 @@
 package org.thoughtcrime.securesms.conversation
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.media.AudioManager
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.View
-import androidx.activity.viewModels
+import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.media.AudioManagerCompat
-import androidx.window.layout.WindowMetricsCalculator
-import com.bumptech.glide.Glide
-import com.bumptech.glide.MemoryCategory
-import org.signal.core.util.dp
-import org.signal.core.util.sp
-import org.thoughtcrime.securesms.PassphraseRequiredActivity
-import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaController
-import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner
-import org.thoughtcrime.securesms.stories.StoryViewerArgs
-import org.thoughtcrime.securesms.stories.viewer.page.StoryViewStateCache
-import org.thoughtcrime.securesms.stories.viewer.page.StoryViewStateViewModel
-import org.thoughtcrime.securesms.util.FullscreenHelper
-import org.thoughtcrime.securesms.util.ServiceUtil
-import org.thoughtcrime.securesms.util.ViewUtil
-import kotlin.math.max
-import kotlin.math.min
+import org.thoughtcrime.securesms.databinding.ProofModeSeeMoreBinding
+import org.thoughtcrime.securesms.mediasend.ProofMessage
 
-class ProofSeeMoreActivity : AppCompatActivity()  {
+class ProofSeeMoreActivity : AppCompatActivity() {
 
+  private lateinit var binding: ProofModeSeeMoreBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    if (savedInstanceState != null) {
-
-    }
-
-    actionBar?.title = "SOME TEXT"
-
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.proof_mode_see_more)
+    binding = ProofModeSeeMoreBinding.inflate(layoutInflater)
+    setContentView(binding.root)
 
-  }
+    val proofMessage = intent.parcelable<ProofMessage>(PROOF_MESSAGE)
 
-  override fun onSaveInstanceState(outState: Bundle) {
-    super.onSaveInstanceState(outState)
-//    outState.putParcelable(DATA_CACHE, storyViewStateViewModel.storyViewStateCache)
+    title = "Proof Details"
+
+    proofMessage?.let {
+      binding.takenText.text = it.getTakenText()
+      binding.phoneText.text = it.getDeviceNameText()
+      binding.locationText.text = it.getNearText()
+      binding.networkText.text = it.getNetworkTypeText()
+    }
   }
 
   companion object {
-    private const val ARGS = "story.viewer.args"
-    private const val DATA_CACHE = "story.viewer.cache"
+    const val PROOF_MESSAGE = "proof_message"
 
     @JvmStatic
     fun createIntent(
       context: Context,
-//      storyViewerArgs: StoryViewerArgs
+      proofMessage: ProofMessage
     ): Intent {
-      return Intent(context, ProofSeeMoreActivity::class.java)
+      return Intent(context, ProofSeeMoreActivity::class.java).apply {
+        putExtra(PROOF_MESSAGE, proofMessage)
+      }
     }
   }
+}
+
+inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+  SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
+  else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+
+inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
+  SDK_INT >= 33 -> getParcelable(key, T::class.java)
+  else -> @Suppress("DEPRECATION") getParcelable(key) as? T
 }

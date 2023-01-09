@@ -218,6 +218,7 @@ object ProofModeUtil {
       time = json.getString("Proof Generated"),
       location = json.getString("Location.Bearing"),
       deviceName = json.getString("Hardware"),
+      networkType = json.getString("NetworkType"),
       proofsList = proofs
     )
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
@@ -230,12 +231,14 @@ fun parseProofObjectFromString(proof: String): ProofMessage {
     val takenText = proof.substringAfter("Taken:").substringBefore("\n").trim()
     val nearText = proof.substringAfter("Near:").substringBefore("\n").trim()
     val proofsList = proof.substringAfter("Proofs:").substringBefore("\n").trim()
+    val networkType = proof.substringAfter("Network Type:").substringBefore("\n").trim()
     val deviceName = proof.substringAfter("Device Name:").substringBefore("\n").trim()
     ProofMessage(
       taken = takenText,
       near = nearText,
       proofs = proofsList,
-      deviceName = deviceName
+      deviceName = deviceName,
+      networkType = networkType
     )
   } catch (ex: Exception) {
     ProofMessage()

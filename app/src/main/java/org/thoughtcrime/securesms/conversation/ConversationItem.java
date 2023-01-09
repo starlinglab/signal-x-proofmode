@@ -1069,7 +1069,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
         ProofMessage proofMessage = parseProofObjectFromString(String.valueOf(styledText));
 
         /**
-         * MAKE OBJECT INSTEAD OF PARSE LIST
+         * SHOW CUSTOM MESSAGE UI INSTEAD OF SIGNALS DEFAULT
          */
         TextView timeText = proofLayout.findViewById(R.id.time_text);
         timeText.setText(proofMessage.getTakenText());
@@ -1082,6 +1082,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       } else {
         bodyText.setText(StringUtil.trim(styledText));
         bodyText.setVisibility(View.VISIBLE);
+        proofLayout.setVisibility(View.GONE);
       }
 
       if (conversationMessage.getBottomButton() != null) {
