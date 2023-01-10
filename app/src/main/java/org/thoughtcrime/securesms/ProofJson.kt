@@ -10,6 +10,8 @@ data class ProofJson(
   val latitude: String,
   val time: String,
   val location: String,
+  val deviceName: String,
+  val networkType: String,
   val proofsList: List<Proofs>
 ): Parcelable {
 
@@ -20,6 +22,8 @@ data class ProofJson(
     json.put("latitude", latitude)
     json.put("time", time)
     json.put("location", location)
+    json.put("deviceName", deviceName)
+    json.put("networkType", networkType)
     json.put("proofsList", proofsList.toString())
     return json
   }
@@ -27,9 +31,11 @@ data class ProofJson(
 
 fun JSONObject.proofFromJson(): ProofJson {
   val proofList = arrayListOf<Proofs>()
-  if (!getString("proofsList").trim().isNullOrEmpty()) {
-    if (getString("proofsList").dropLast(1).drop(1).isNotEmpty()) {
-      getString("proofsList").split(",").map {
+  var proofString = getString("proofsList").trim()
+  if (!proofString.isNullOrEmpty()) {
+    proofString = proofString.replace("[","").replace("]", "")
+    if (proofString.isNotEmpty()) {
+      proofString.split(",").map {
         proofList.add(Proofs.valueOf(it.trim()))
       }
     }
@@ -39,6 +45,8 @@ fun JSONObject.proofFromJson(): ProofJson {
     latitude = getString("latitude"),
     time = getString("time"),
     location = getString("location"),
+    deviceName = getString("deviceName"),
+    networkType = getString("networkType"),
     proofsList = proofList
   )
 }

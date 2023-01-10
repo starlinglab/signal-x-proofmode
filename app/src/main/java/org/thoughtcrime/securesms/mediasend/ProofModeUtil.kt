@@ -23,7 +23,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.TimeZone
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.math.abs
@@ -218,6 +217,8 @@ object ProofModeUtil {
       latitude = json.getString("Location.Latitude"),
       time = json.getString("Proof Generated"),
       location = json.getString("Location.Bearing"),
+      deviceName = json.getString("Hardware"),
+      networkType = json.getString("NetworkType"),
       proofsList = proofs
     )
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
@@ -225,13 +226,21 @@ object ProofModeUtil {
 
 }
 
-fun parseProofObjectFromString(proof: String): ArrayList<String> {
-  val resultList = arrayListOf<String>()
-  val takenText = proof.substringAfter("\n").substringBefore("\n")
-  val nearText = proof.substringAfter("Near:").substringBefore("\n")
-  val proofsList = proof.substringAfter("Proofs:").substringBefore("\n")
-  resultList.add(takenText)
-  resultList.add(nearText)
-  resultList.add(proofsList)
-  return resultList
+fun parseProofObjectFromString(proof: String): ProofMessage {
+  return try {
+    val takenText = proof.substringAfter("Taken:").substringBefore("\n").trim()
+    val nearText = proof.substringAfter("Near:").substringBefore("\n").trim()
+    val proofsList = proof.substringAfter("Proofs:").substringBefore("\n").trim()
+    val networkType = proof.substringAfter("Network Type:").substringBefore("\n").trim()
+    val deviceName = proof.substringAfter("Device Name:").substringBefore("\n").trim()
+    ProofMessage(
+      taken = takenText,
+      near = nearText,
+      proofs = proofsList,
+      deviceName = deviceName,
+      networkType = networkType
+    )
+  } catch (ex: Exception) {
+    ProofMessage()
+  }
 }

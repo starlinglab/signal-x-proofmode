@@ -139,6 +139,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.longmessage.LongMessageFragment;
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
+import org.thoughtcrime.securesms.mediasend.ProofMessage;
 import org.thoughtcrime.securesms.messagedetails.MessageDetailsFragment;
 import org.thoughtcrime.securesms.messagerequests.MessageRequestState;
 import org.thoughtcrime.securesms.messagerequests.MessageRequestViewModel;
@@ -1732,6 +1733,10 @@ public class ConversationFragment extends LoggingFragment implements Multiselect
 
       Uri messageUri = ((MmsMessageRecord) messageRecord).getSlideDeck().getAudioSlide().getUri();
       return playbackState.getUri().equals(messageUri) ? messageUri : null;
+    }
+
+    @Override public void onSeeMoreClick(ProofMessage proofMessage) {
+      startActivity(ProofSeeMoreActivity.createIntent(requireContext(), proofMessage));
     }
 
     @Override

@@ -425,6 +425,16 @@
             android:name="android.support.PARENT_ACTIVITY"
             android:value="org.thoughtcrime.securesms.MainActivity" />
     </activity>
+        <activity
+            android:name=".conversation.ProofSeeMoreActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing">
+
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="org.thoughtcrime.securesms.MainActivity" />
+    </activity>
 
         <activity android:name=".components.settings.app.changenumber.ChangeNumberLockActivity"
             android:theme="@style/Signal.DayNight.NoActionBar"

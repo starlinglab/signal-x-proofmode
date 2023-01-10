@@ -23,6 +23,7 @@ import org.thoughtcrime.securesms.giph.mp4.GiphyMp4Playable;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupMigrationMembershipChange;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
+import org.thoughtcrime.securesms.mediasend.ProofMessage;
 import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
@@ -68,6 +69,7 @@ public interface BindableConversationItem extends Unbindable, GiphyMp4Playable, 
 
   interface EventListener {
     void onQuoteClicked(MmsMessageRecord messageRecord);
+    void onSeeMoreClick(ProofMessage proofMessage);
     void onLinkPreviewClicked(@NonNull LinkPreview linkPreview);
     void onQuotedIndicatorClicked(@NonNull MessageRecord messageRecord);
     void onMoreTextClicked(@NonNull RecipientId conversationRecipientId, long messageId, boolean isMms);
