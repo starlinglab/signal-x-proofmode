@@ -5,6 +5,16 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.WorkerThread
 import androidx.preference.PreferenceManager
+import com.mobilecoin.lib.AccountKey
+import com.mobilecoin.lib.AccountSnapshot
+import com.mobilecoin.lib.Amount
+import com.mobilecoin.lib.DefaultRng
+import com.mobilecoin.lib.Mnemonics
+import com.mobilecoin.lib.MobileCoinClient
+import com.mobilecoin.lib.PrintableWrapper
+import com.mobilecoin.lib.Transaction
+import com.mobilecoin.lib.TxOutMemoBuilder
+import com.mobilecoin.lib.network.TransportProtocol
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -30,6 +40,8 @@ import org.thoughtcrime.securesms.mediasend.MediaRepository
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.MediaTransform
 import org.thoughtcrime.securesms.mediasend.MediaUploadRepository
+import org.thoughtcrime.securesms.mediasend.MobileCoinObject
+import org.thoughtcrime.securesms.mediasend.MobileCoinProofUtil
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
 import org.thoughtcrime.securesms.mediasend.ProofConstants.PROOF_OBJECT
 import org.thoughtcrime.securesms.mediasend.ProofModeUtil
@@ -41,6 +53,7 @@ import org.thoughtcrime.securesms.mms.OutgoingMediaMessage
 import org.thoughtcrime.securesms.mms.OutgoingSecureMediaMessage
 import org.thoughtcrime.securesms.mms.SentMediaQuality
 import org.thoughtcrime.securesms.mms.Slide
+import org.thoughtcrime.securesms.payments.MobileCoinConfig
 import org.thoughtcrime.securesms.proofFromJson
 import org.thoughtcrime.securesms.providers.BlobProvider
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -53,6 +66,7 @@ import org.thoughtcrime.securesms.util.MessageUtil
 import java.util.Collections
 import java.util.Optional
 import java.util.concurrent.TimeUnit
+
 
 private val TAG = Log.tag(MediaSelectionRepository::class.java)
 
@@ -253,6 +267,81 @@ class MediaSelectionRepository(context: Context) {
     return modelsToRender
   }
 
+  lateinit var mobileCoinConfig: MobileCoinConfig
+
+  private fun mobileCoinSetup(): MobileCoinObject {
+//    val paymentsEntropy = SignalStore.paymentsValues().paymentsEntropy!!
+    val paymentsEntropy = DefaultRng.createInstance().nextBytes(32)
+
+    // Create account key or access to the same one (need implementation)
+    val key = AccountKey.fromBip39Entropy(
+      paymentsEntropy,
+      0,
+      MobileCoinProofUtil.getFogReportUri(),
+      "",
+      ByteArray(0)
+    )
+
+    // Should save phrase
+    val myRecoveryPhrase = Mnemonics.bip39EntropyToMnemonic(paymentsEntropy) // Save this securely! It is required to access the account
+
+    // Create client from new user to prepare transaction
+    val client = MobileCoinClient(
+      key,
+      MobileCoinProofUtil.getFogUri(),
+      MobileCoinProofUtil.getConsensusUri(),
+      TransportProtocol.forGRPC()
+    )
+
+
+    // Later, to access the same account, I recommend the following
+/*    val restoredKey = AccountKey.fromMnemonicPhrase(
+      myRecoveryPhrase,
+      0,
+      MobileCoinProofUtil.getFogReportUri(),
+      "", ByteArray(0))
+    val existingClient = MobileCoinClient(
+      key,
+      MobileCoinProofUtil.getFogUri(),
+      MobileCoinProofUtil.getConsensusUri(),
+      TransportProtocol.forGRPC()
+    )*/
+
+
+    val publicAddress = key.publicAddress
+    val wrapper: PrintableWrapper = PrintableWrapper.fromPublicAddress(publicAddress)
+    val printablePubAddress: String = wrapper.toB58String()
+
+    val accountSnapshot: AccountSnapshot = client.accountSnapshot
+
+    /**
+     * UPDATES TOMORROW 12.01.23
+     */
+/*    val pendingTransaction = if (accountSnapshot != null) {
+      accountSnapshot.prepareTransaction(
+        publicAddress,
+        Amount.ofMOB(0),
+        Amount.ofMOB(0),
+        TxOutMemoBuilder.createSenderPaymentIntentAndDestinationRTHMemoBuilder(key, ""))
+    } else {
+      client.prepareTransaction(publicAddress,
+        Amount.ofMOB(0),
+        Amount.ofMOB(0),
+        TxOutMemoBuilder.createSenderPaymentIntentAndDestinationRTHMemoBuilder(key, ""))
+    }
+    client.submitTransaction(pendingTransaction.transaction)
+
+    client.getTransactionStatus(pendingTransaction.transaction)
+
+    Transaction.Status*/
+
+
+    // Set address to object
+    return MobileCoinObject(
+      publicAddress = printablePubAddress
+    )
+  }
+
   @WorkerThread
   private fun sendMessages(
     contacts: List<ContactSearchKey.RecipientSearchKey>,
@@ -308,11 +397,11 @@ class MediaSelectionRepository(context: Context) {
             "\nProofs: $proofListString" +
             "\nNetwork Type: ${proofObject.networkType}" +
             "\nDevice Name: ${proofObject.deviceName} " + "Android v.${Build.VERSION.RELEASE}"
-            "\nProofs were checked and verified"
+          "\nProofs were checked and verified"
           headerString + "\n" + body
         } else {
           "Taken: ${ProofModeUtil.convertLongToTime(System.currentTimeMillis().toString())} UTC" +
-          "\nProofs were checked and verified"
+            "\nProofs were checked and verified"
         }
       } else {
         body

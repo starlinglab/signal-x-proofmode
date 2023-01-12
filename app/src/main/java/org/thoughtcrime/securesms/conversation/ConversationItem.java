@@ -1082,7 +1082,6 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       } else {
         bodyText.setText(StringUtil.trim(styledText));
         bodyText.setVisibility(View.VISIBLE);
-        proofLayout.setVisibility(View.GONE);
       }
 
       if (conversationMessage.getBottomButton() != null) {
