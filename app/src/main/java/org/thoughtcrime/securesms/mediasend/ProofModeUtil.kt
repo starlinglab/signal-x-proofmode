@@ -29,6 +29,8 @@ import kotlin.math.abs
 
 object ProofModeUtil {
 
+  var photoByteArray = byteArrayOf()
+
   fun setProofSettingsGlobal(
     context: Context,
     proofLocation: Boolean? = null,
@@ -119,6 +121,7 @@ object ProofModeUtil {
     return if (isEnabled) {
       val proofHash = ProofMode.generateProof(context, uri, byteArray, mimeType)
       ProofMode.getProofDir(context, proofHash)
+      photoByteArray = byteArray
 
       proofHash
     } else {
@@ -126,7 +129,7 @@ object ProofModeUtil {
     }
   }
 
-  fun setProofPoints(
+  private fun setProofPoints(
     context: Context,
     proofDeviceIds: Boolean = true,
     proofLocation: Boolean = true,
@@ -159,8 +162,8 @@ object ProofModeUtil {
   fun createZipProof(proofHash: String, context: Context): File {
     settingsSetter(context)
 
-    var proofDir = ProofMode.getProofDir(context, proofHash)
-    var fileZip = makeProofZip(proofDir.absoluteFile, context)
+    val proofDir = ProofMode.getProofDir(context, proofHash)
+    val fileZip = makeProofZip(proofDir.absoluteFile, context, proofHash)
 
     Log.e("ZIP PATH", "zip path: $fileZip")
 
@@ -168,7 +171,7 @@ object ProofModeUtil {
 
   }
 
-  private fun makeProofZip(proofDirPath: File, context: Context): File {
+  private fun makeProofZip(proofDirPath: File, context: Context, proofHash: String): File {
     val outputZipFile = File(proofDirPath.path, proofDirPath.name + ".zip")
     ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { zos ->
       proofDirPath.walkTopDown().forEach { file ->
@@ -183,10 +186,16 @@ object ProofModeUtil {
         }
       }
 
-      val keyEntry = ZipEntry("pubkey.asc");
-      zos.putNextEntry(keyEntry);
-      var publicKey = ProofMode.getPublicKeyString(context)
+      val keyEntry = ZipEntry("pubkey.asc")
+      zos.putNextEntry(keyEntry)
+      val publicKey = ProofMode.getPublicKeyString(context)
       zos.write(publicKey.orEmpty().toByteArray())
+
+      val photoEntry = ZipEntry("$proofHash.jpg")
+      zos.putNextEntry(photoEntry)
+      zos.write(photoByteArray)
+
+      photoByteArray = byteArrayOf()
 
       return outputZipFile
     }
