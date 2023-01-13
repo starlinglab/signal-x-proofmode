@@ -7,13 +7,10 @@ import androidx.annotation.WorkerThread
 import androidx.preference.PreferenceManager
 import com.mobilecoin.lib.AccountKey
 import com.mobilecoin.lib.AccountSnapshot
-import com.mobilecoin.lib.Amount
 import com.mobilecoin.lib.DefaultRng
 import com.mobilecoin.lib.Mnemonics
 import com.mobilecoin.lib.MobileCoinClient
 import com.mobilecoin.lib.PrintableWrapper
-import com.mobilecoin.lib.Transaction
-import com.mobilecoin.lib.TxOutMemoBuilder
 import com.mobilecoin.lib.network.TransportProtocol
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
