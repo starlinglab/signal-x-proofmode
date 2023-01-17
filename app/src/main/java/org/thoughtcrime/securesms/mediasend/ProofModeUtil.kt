@@ -119,7 +119,7 @@ object ProofModeUtil {
   fun getProofHash(context: Context, uri: Uri, byteArray: ByteArray, mimeType: String): String {
     val isEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)
     return if (isEnabled) {
-      val proofHash = ProofMode.generateProof(context, uri, byteArray, mimeType)
+      val proofHash = ProofMode.generateProof(context, Uri.parse("$uri.jpg"), byteArray, mimeType)
       ProofMode.getProofDir(context, proofHash)
       photoByteArray = byteArray
 
@@ -163,7 +163,7 @@ object ProofModeUtil {
     settingsSetter(context)
 
     val proofDir = ProofMode.getProofDir(context, proofHash)
-    val fileZip = makeProofZip(proofDir.absoluteFile, context, proofHash)
+    val fileZip = makeProofZip(proofDir.absoluteFile, context)
 
     Log.e("ZIP PATH", "zip path: $fileZip")
 
@@ -171,12 +171,14 @@ object ProofModeUtil {
 
   }
 
-  private fun makeProofZip(proofDirPath: File, context: Context, proofHash: String): File {
+  private fun makeProofZip(proofDirPath: File, context: Context): File {
     val outputZipFile = File(proofDirPath.path, proofDirPath.name + ".zip")
+    var photoName = "placeholder.jpg"
     ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { zos ->
       proofDirPath.walkTopDown().forEach { file ->
         if (file.name.endsWith(".json")) {
           saveJson(file, context)
+          photoName = getPhotoName(file).substringAfterLast("/")
         }
         val zipFileName = file.absolutePath.removePrefix(proofDirPath.absolutePath).removePrefix("/")
         val entry = ZipEntry("$zipFileName${(if (file.isDirectory) "/" else "")}")
@@ -191,7 +193,7 @@ object ProofModeUtil {
       val publicKey = ProofMode.getPublicKeyString(context)
       zos.write(publicKey.orEmpty().toByteArray())
 
-      val photoEntry = ZipEntry("$proofHash.jpg")
+      val photoEntry = ZipEntry(photoName)
       zos.putNextEntry(photoEntry)
       zos.write(photoByteArray)
 
@@ -199,6 +201,13 @@ object ProofModeUtil {
 
       return outputZipFile
     }
+  }
+
+  private fun getPhotoName(file: File): String {
+    val bufferedReader: BufferedReader = file.bufferedReader()
+    val inputString = bufferedReader.use { it.readText() }
+    val json = JSONObject(inputString)
+    return json.getString("File Path")
   }
 
   private fun saveJson(file: File, context: Context) {
