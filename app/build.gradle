@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'androidx.navigation.safeargs'
-apply plugin: 'org.jlleitschuh.gradle.ktlint'
+//apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply from: 'translations.gradle'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'app.cash.exhaustive'
@@ -46,10 +46,11 @@ protobuf {
     }
 }
 
-ktlint {
-    // Use a newer version to resolve https://github.com/JLLeitschuh/ktlint-gradle/issues/507
-    version = "0.43.2"
-}
+
+//ktlint {
+//    // Use a newer version to resolve https://github.com/JLLeitschuh/ktlint-gradle/issues/507
+//    version = "0.43.2"
+//}
 
 def canonicalVersionCode = 1181
 def canonicalVersionName = "6.5.6"
@@ -231,14 +232,16 @@ android {
 
         resConfigs autoResConfig()
 
+        /**
         splits {
             abi {
                 enable true
                 reset()
-                include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+                //include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+                include 'arm64-v8a'
                 universalApk true
             }
-        }
+        }**/
 
         testInstrumentationRunner "org.thoughtcrime.securesms.testing.SignalTestRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
@@ -452,11 +455,7 @@ dependencies {
     implementation libs.androidx.sharetarget
 
     //add the libProofMode library
-    implementation ('org.witness:android-libproofmode:1.0.23') {
-        exclude group: 'com.eternitywall'
-    }
-    implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation 'org.witness:android-libproofmode:1.0.25'
     implementation 'org.bouncycastle:bcpkix-jdk15to18:1.72'
     implementation 'org.bouncycastle:bcprov-jdk15to18:1.72'
     implementation 'org.bouncycastle:bcpg-jdk15to18:1.71'
