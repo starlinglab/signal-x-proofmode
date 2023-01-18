@@ -180,7 +180,10 @@ object ProofModeUtil {
   }
 
   private fun makeProofZip(proofDirPath: File, context: Context): File {
-    val outputZipFile = File(proofDirPath.path, proofDirPath.name + ".zip")
+    val outputZipFile = File(proofDirPath.parentFile.path, proofDirPath.name + ".zip")
+    if (outputZipFile.exists())
+      outputZipFile.delete()
+    
     var photoName = "placeholder.jpg"
     ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { zos ->
       proofDirPath.walkTopDown().forEach { file ->
