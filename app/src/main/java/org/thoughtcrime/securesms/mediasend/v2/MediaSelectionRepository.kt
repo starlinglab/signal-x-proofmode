@@ -389,7 +389,7 @@ class MediaSelectionRepository(context: Context) {
           }
           Log.e("OBJECT:", "$proofObject")
           val headerString = "ProofMode info: \n" +
-            "Taken: ${ProofModeUtil.convertLongToTime(proofObject.time)} UTC" +
+            "Taken: ${ProofModeUtil.formatProofTimeString(proofObject.time)} UTC" +
             "\nNear: ${ProofModeUtil.convert(latitude, longitude)}" +
             "\nProofs: $proofListString" +
             "\nNetwork Type: ${proofObject.networkType}" +
@@ -397,7 +397,7 @@ class MediaSelectionRepository(context: Context) {
           "\nProofs were checked and verified"
           headerString + "\n" + body
         } else {
-          "Taken: ${ProofModeUtil.convertLongToTime(System.currentTimeMillis().toString())} UTC" +
+          "Taken: ${ProofModeUtil.convertLongToTime(System.currentTimeMillis())} UTC" +
             "\nProofs were checked and verified"
         }
       } else {

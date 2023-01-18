@@ -48,10 +48,18 @@ object ProofModeUtil {
     }
   }
 
-  fun convertLongToTime(time: String): String {
+  fun formatProofTimeString(time: String): String {
     val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
     val t = df.parse(time).time
     val date = Date(t)
+    val format = SimpleDateFormat("yyyy-MM-dd h:mm a")
+    return format.format(date)
+  }
+
+  fun convertLongToTime(time: Long): String {
+  //  val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
+   // val t = df.parse(time).time
+    val date = Date(time)
     val format = SimpleDateFormat("yyyy-MM-dd h:mm a")
     return format.format(date)
   }
@@ -172,7 +180,10 @@ object ProofModeUtil {
   }
 
   private fun makeProofZip(proofDirPath: File, context: Context): File {
-    val outputZipFile = File(proofDirPath.path, proofDirPath.name + ".zip")
+    val outputZipFile = File(proofDirPath.parentFile.path, proofDirPath.name + ".zip")
+    if (outputZipFile.exists())
+      outputZipFile.delete()
+    
     var photoName = "placeholder.jpg"
     ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { zos ->
       proofDirPath.walkTopDown().forEach { file ->
