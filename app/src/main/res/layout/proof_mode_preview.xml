@@ -13,32 +13,45 @@
         <ImageView
             android:id="@+id/image_placeholder"
             android:layout_width="160dp"
-            android:layout_height="240dp"
+            android:layout_height="160dp"
             android:layout_marginTop="40dp"
-            android:src="@drawable/template"
+            android:src="@drawable/placeholder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/image_lock"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/lock_white"
-            app:layout_constraintBottom_toTopOf="@id/image_placeholder"
-            app:layout_constraintEnd_toStartOf="@id/image_placeholder"
-            app:layout_constraintStart_toStartOf="@id/image_placeholder"
-            app:layout_constraintTop_toTopOf="@id/image_placeholder" />
+        <TextView
+            android:id="@+id/hint_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/choose_title"
+            android:textAppearance="@style/Signal.Text.Title"
+            app:layout_constraintTop_toBottomOf="@id/image_placeholder"
+            app:layout_constraintStart_toStartOf="@id/basic_layout"
+            app:layout_constraintEnd_toEndOf="@id/basic_layout"/>
+
+        <TextView
+            android:id="@+id/hint_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/hint_text"
+            android:textAppearance="@style/Signal.Text.BodyMedium"
+            app:layout_constraintTop_toBottomOf="@id/hint_header"
+            app:layout_constraintStart_toStartOf="@id/basic_layout"
+            app:layout_constraintEnd_toEndOf="@id/basic_layout"/>
 
         <TextView
             android:id="@+id/basic_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="25dp"
             android:text="Basic"
             android:textAppearance="@style/Signal.Text.BodyMedium"
-            app:layout_constraintBottom_toTopOf="@id/basic_layout"
-            app:layout_constraintStart_toStartOf="@id/basic_layout" />
+            app:layout_constraintTop_toBottomOf="@id/hint_description"
+            app:layout_constraintStart_toStartOf="@id/hint_description" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/basic_layout"
@@ -51,7 +64,7 @@
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_placeholder">
+            app:layout_constraintTop_toBottomOf="@id/basic_header">
 
             <CheckBox
                 android:id="@+id/check_button_basic"
