@@ -127,7 +127,7 @@ object ProofModeUtil {
   fun getProofHash(context: Context, uri: Uri, byteArray: ByteArray, mimeType: String): String {
     val isEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)
     return if (isEnabled) {
-      val proofHash = ProofMode.generateProof(context, Uri.parse("$uri.jpg"), byteArray, mimeType)
+      val proofHash = ProofMode.generateProof(context, uri, byteArray, mimeType)
       ProofMode.getProofDir(context, proofHash)
       photoByteArray = byteArray
 
@@ -176,7 +176,6 @@ object ProofModeUtil {
     Log.e("ZIP PATH", "zip path: $fileZip")
 
     return fileZip
-
   }
 
   private fun makeProofZip(proofDirPath: File, context: Context): File {
@@ -204,6 +203,11 @@ object ProofModeUtil {
       val publicKey = ProofMode.getPublicKeyString(context)
       zos.write(publicKey.orEmpty().toByteArray())
 
+      photoName = if (photoName.endsWith(".jpg", true)) {
+        photoName
+      } else {
+        "$photoName.jpg"
+      }
       val photoEntry = ZipEntry(photoName)
       zos.putNextEntry(photoEntry)
       zos.write(photoByteArray)
@@ -262,12 +266,14 @@ fun parseProofObjectFromString(proof: String): ProofMessage {
     val proofsList = proof.substringAfter("Proofs:").substringBefore("\n").trim()
     val networkType = proof.substringAfter("Network Type:").substringBefore("\n").trim()
     val deviceName = proof.substringAfter("Device Name:").substringBefore("\n").trim()
+    val hash = proof.substringAfter("Hash:").substringBefore("\n").trim()
     ProofMessage(
       taken = takenText,
       near = nearText,
       proofs = proofsList,
       deviceName = deviceName,
-      networkType = networkType
+      networkType = networkType,
+      hash = hash
     )
   } catch (ex: Exception) {
     ProofMessage()

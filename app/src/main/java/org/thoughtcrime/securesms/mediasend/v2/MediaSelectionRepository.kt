@@ -393,7 +393,7 @@ class MediaSelectionRepository(context: Context) {
             "\nNear: ${ProofModeUtil.convert(latitude, longitude)}" +
             "\nProofs: $proofListString" +
             "\nNetwork Type: ${proofObject.networkType}" +
-            "\nDevice Name: ${proofObject.deviceName} " + "Android v.${Build.VERSION.RELEASE}"
+            "\nDevice Name: ${proofObject.deviceName} " + "Android v.${Build.VERSION.RELEASE}" +
           "\nProofs were checked and verified"
           headerString + "\n" + body
         } else {
