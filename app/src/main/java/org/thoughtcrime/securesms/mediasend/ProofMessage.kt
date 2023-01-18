@@ -10,10 +10,15 @@ data class ProofMessage(
   val proofs: String = "Not defined",
   val deviceName: String = "Not defined",
   val networkType: String = "Not defined",
+  var hash: String = "Not defined",
 ): Parcelable {
 
   fun getTakenText(): String {
     return "Taken: $taken"
+  }
+
+  fun getHashText(): String {
+    return "Hash: $hash"
   }
 
   fun getNearText(): String {
@@ -36,6 +41,7 @@ data class ProofMessage(
     return "Taken: $taken" +
       "\n Near: $near" +
       "\n Proofs: $proofs" +
-      "\n Device Name: $deviceName"
+      "\n Device Name: $deviceName" +
+      "\n Hash: $hash"
   }
 }

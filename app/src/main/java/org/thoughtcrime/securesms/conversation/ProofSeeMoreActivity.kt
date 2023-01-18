@@ -27,6 +27,7 @@ class ProofSeeMoreActivity : AppCompatActivity() {
       binding.phoneText.text = it.getDeviceNameText()
       binding.locationText.text = it.getNearText()
       binding.networkText.text = it.getNetworkTypeText()
+      binding.ciCdText.text = it.getHashText().substringBefore(".zip")
     }
   }
 

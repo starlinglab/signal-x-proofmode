@@ -1068,6 +1068,20 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
         proofLayout.setVisibility(View.VISIBLE);
         ProofMessage proofMessage = parseProofObjectFromString(String.valueOf(styledText));
 
+
+        String hash = "";
+        MessageRecord next = nextMessageRecord.get();
+        try {
+          if (next != null) {
+            if (hasDocument(next)) {
+              hash = ((MediaMmsMessageRecord) next).getSlideDeck().getDocumentSlide().asAttachment().getFileName();
+            }
+          }
+        } catch (Exception exception) {
+          hash = "Placeholder";
+        }
+        proofMessage.setHash(hash);
+
         /**
          * SHOW CUSTOM MESSAGE UI INSTEAD OF SIGNALS DEFAULT
          */
