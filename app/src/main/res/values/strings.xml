@@ -5459,5 +5459,8 @@
     <string name="device_text">e.g. Wifi or Mobile LTE</string>
     <string name="version_text">e.g. Samsung Galaxy X, Android v12</string>
     <string name="noteries_text">Notary: MobileCoin TX ID</string>
+    <string name="hint_text">This photograph is accompanied by the following metadata, which your correspondent specifically chose to record. Examine them attentively: they <b>further the trust</b> in the photo itself and <b>provide context</b> around it.</string>
+    <string name="choose_title">Choose correlating proofs</string>
+    <string name="about_title">About this photograph</string>
 
 </resources>
