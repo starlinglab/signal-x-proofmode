@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'androidx.navigation.safeargs'
-apply plugin: 'org.jlleitschuh.gradle.ktlint'
+//apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply from: 'translations.gradle'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'app.cash.exhaustive'
@@ -46,10 +46,11 @@ protobuf {
     }
 }
 
-ktlint {
-    // Use a newer version to resolve https://github.com/JLLeitschuh/ktlint-gradle/issues/507
-    version = "0.43.2"
-}
+
+//ktlint {
+//    // Use a newer version to resolve https://github.com/JLLeitschuh/ktlint-gradle/issues/507
+//    version = "0.43.2"
+//}
 
 def canonicalVersionCode = 1181
 def canonicalVersionName = "6.5.6"
