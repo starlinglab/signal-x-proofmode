@@ -246,12 +246,12 @@ object ProofModeUtil {
     val inputString = bufferedReader.use { it.readText() }
     val json = JSONObject(inputString)
     val proofJson = ProofJson(
-      longitude = json.getString("Location.Longitude"),
-      latitude = json.getString("Location.Latitude"),
-      time = json.getString("Proof Generated"),
-      location = json.getString("Location.Bearing"),
-      deviceName = json.getString("Hardware"),
-      networkType = json.getString("NetworkType"),
+      longitude = json.optString("Location.Longitude","0.0"),
+      latitude = json.optString("Location.Latitude","0.0"),
+      time = json.optString("Proof Generated",""),
+      location = json.optString("Location.Bearing","none"),
+      deviceName = json.optString("Hardware","unknown"),
+      networkType = json.optString("NetworkType","unknown"),
       proofsList = proofs
     )
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
