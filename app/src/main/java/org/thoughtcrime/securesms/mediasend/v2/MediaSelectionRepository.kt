@@ -353,7 +353,7 @@ class MediaSelectionRepository(context: Context) {
     Geocoder(context, Locale.getDefault())
       .getAddress(lat, long) { address: android.location.Address? ->
         if (address != null) {
-          addressResult = address.adminArea
+          addressResult = address.adminArea + ", " + address.countryCode
         }
       }
     return addressResult
