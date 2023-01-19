@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
+import org.apache.commons.lang.StringUtils
 import androidx.appcompat.app.AppCompatActivity
 import org.thoughtcrime.securesms.databinding.ProofModeSeeMoreBinding
 import org.thoughtcrime.securesms.mediasend.ProofMessage
@@ -12,6 +13,12 @@ import org.thoughtcrime.securesms.mediasend.ProofMessage
 class ProofSeeMoreActivity : AppCompatActivity() {
 
   private lateinit var binding: ProofModeSeeMoreBinding
+
+  fun formatHashString(s: String): String {
+    val firstSix = StringUtils.left(s, 6);
+    val lastSix = StringUtils.right(s, 6);
+    return "$firstSix ... $lastSix";
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -27,7 +34,7 @@ class ProofSeeMoreActivity : AppCompatActivity() {
       binding.phoneText.text = it.getDeviceNameText()
       binding.locationText.text = it.getNearText()
       binding.networkText.text = it.getNetworkTypeText()
-      binding.ciCdText.text = it.getHashText().substringBefore(".zip")
+      binding.ciCdText.text = formatHashString(it.getHashText().substringBefore(".zip"))
     }
   }
 
