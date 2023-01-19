@@ -1,10 +1,13 @@
 package org.thoughtcrime.securesms.mediasend.v2
 
 import android.content.Context
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.WorkerThread
 import androidx.preference.PreferenceManager
+import com.google.android.gms.location.LocationServices
 import com.mobilecoin.lib.AccountKey
 import com.mobilecoin.lib.AccountSnapshot
 import com.mobilecoin.lib.DefaultRng
@@ -16,6 +19,9 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.signal.core.util.BreakIteratorCompat
 import org.signal.core.util.ThreadUtil
@@ -23,6 +29,7 @@ import org.signal.core.util.logging.Log
 import org.signal.imageeditor.core.model.EditorModel
 import org.thoughtcrime.securesms.contacts.paged.ContactSearchKey
 import org.thoughtcrime.securesms.conversation.MessageSendType
+import org.thoughtcrime.securesms.conversation.NativeLocationSource
 import org.thoughtcrime.securesms.database.AttachmentTable.TransformProperties
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.ThreadTable
@@ -61,12 +68,14 @@ import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.MessageUtil
 import java.util.Collections
+import java.util.Locale
 import java.util.Optional
 import java.util.concurrent.TimeUnit
 
 
 private val TAG = Log.tag(MediaSelectionRepository::class.java)
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MediaSelectionRepository(context: Context) {
 
   private val context: Context = context.applicationContext
@@ -339,6 +348,37 @@ class MediaSelectionRepository(context: Context) {
     )
   }
 
+  private fun getCityName(lat: Double, long: Double): String {
+    var addressResult = ""
+    Geocoder(context, Locale.getDefault())
+      .getAddress(lat, long) { address: android.location.Address? ->
+        if (address != null) {
+          addressResult = address.adminArea
+        }
+      }
+    return addressResult
+  }
+
+  @Suppress("DEPRECATION")
+  fun Geocoder.getAddress(
+    latitude: Double,
+    longitude: Double,
+    address: (android.location.Address?) -> Unit
+  ) {
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      getFromLocation(latitude, longitude, 1) { address(it.firstOrNull()) }
+      return
+    }
+
+    try {
+      address(getFromLocation(latitude, longitude, 1)?.firstOrNull())
+    } catch (e: Exception) {
+      //will catch if there is an internet problem
+      address(null)
+    }
+  }
+
   @WorkerThread
   private fun sendMessages(
     contacts: List<ContactSearchKey.RecipientSearchKey>,
@@ -369,6 +409,12 @@ class MediaSelectionRepository(context: Context) {
         else -> StoryType.NONE
       }
       val newBody = if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)) {
+        var location: Location? = null
+        runBlocking {
+          val locationSource = NativeLocationSource(context, LocationServices.getFusedLocationProviderClient(context))
+          location = locationSource.getLocationUpdates().first()
+        }
+        val city = getCityName(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
         val proofJson = PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()
         if (proofJson.isNotEmpty()) {
           val proofObject = JSONObject(proofJson).proofFromJson()
@@ -390,11 +436,11 @@ class MediaSelectionRepository(context: Context) {
           Log.e("OBJECT:", "$proofObject")
           val headerString = "ProofMode info: \n" +
             "Taken: ${ProofModeUtil.formatProofTimeString(proofObject.time)} UTC" +
-            "\nNear: ${ProofModeUtil.convert(latitude, longitude)}" +
+            "\nNear: $city, ${ProofModeUtil.convert(latitude, longitude)}" +
             "\nProofs: $proofListString" +
             "\nNetwork Type: ${proofObject.networkType}" +
             "\nDevice Name: ${proofObject.deviceName} " + "Android v.${Build.VERSION.RELEASE}" +
-          "\nProofs were checked and verified"
+            "\nProofs were checked and verified"
           headerString + "\n" + body
         } else {
           "Taken: ${ProofModeUtil.convertLongToTime(System.currentTimeMillis())} UTC" +

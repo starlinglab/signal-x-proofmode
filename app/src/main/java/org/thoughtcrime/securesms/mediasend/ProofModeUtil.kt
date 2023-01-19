@@ -1,8 +1,11 @@
 package org.thoughtcrime.securesms.mediasend
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
+import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import org.json.JSONObject
 import org.signal.core.util.logging.Log
@@ -257,6 +260,12 @@ object ProofModeUtil {
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
   }
 
+  @JvmStatic
+  fun hasAnyPermission(context: Context, permission: Set<String>) =
+    permission.any { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
+
+  @JvmField
+  val LOCATION = setOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
 }
 
 fun parseProofObjectFromString(proof: String): ProofMessage {
