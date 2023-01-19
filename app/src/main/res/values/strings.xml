@@ -2655,7 +2655,7 @@
     <string name="preferences__data_and_storage">Data and storage</string>
     <string name="preferences__storage">Storage</string>
     <string name="preferences__payments">Payments</string>
-    <string name="preferences__proof_mode">Proof Mode</string>
+    <string name="preferences__proof_mode">ProofMode</string>
     <!-- Privacy settings payments section description -->
     <string name="preferences__payment_lock">Payment lock</string>
     <string name="preferences__payments_beta">Payments (Beta)</string>

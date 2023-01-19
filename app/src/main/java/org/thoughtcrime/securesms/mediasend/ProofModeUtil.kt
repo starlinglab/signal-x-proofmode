@@ -55,7 +55,7 @@ object ProofModeUtil {
     val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
     val t = df.parse(time).time
     val date = Date(t)
-    val format = SimpleDateFormat("yyyy-MM-dd h:mm a")
+    val format = SimpleDateFormat("MMM d, yyyy – h:mm a")
     return format.format(date)
   }
 
@@ -63,7 +63,7 @@ object ProofModeUtil {
   //  val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
    // val t = df.parse(time).time
     val date = Date(time)
-    val format = SimpleDateFormat("yyyy-MM-dd h:mm a")
+    val format = SimpleDateFormat("MMM d, yyyy – h:mm a")
     return format.format(date)
   }
 
@@ -130,7 +130,7 @@ object ProofModeUtil {
   fun getProofHash(context: Context, uri: Uri, byteArray: ByteArray, mimeType: String): String {
     val isEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)
     return if (isEnabled) {
-      val proofHash = ProofMode.generateProof(context, uri, byteArray, mimeType)
+      val proofHash = ProofMode.generateProof(context, Uri.parse("$uri.jpg"), byteArray, mimeType)
       ProofMode.getProofDir(context, proofHash)
       photoByteArray = byteArray
 
@@ -249,12 +249,12 @@ object ProofModeUtil {
     val inputString = bufferedReader.use { it.readText() }
     val json = JSONObject(inputString)
     val proofJson = ProofJson(
-      longitude = json.getString("Location.Longitude"),
-      latitude = json.getString("Location.Latitude"),
-      time = json.getString("Proof Generated"),
-      location = json.getString("Location.Bearing"),
-      deviceName = json.getString("Hardware"),
-      networkType = json.getString("NetworkType"),
+      longitude = json.optString("Location.Longitude","0.0"),
+      latitude = json.optString("Location.Latitude","0.0"),
+      time = json.optString("Proof Generated",""),
+      location = json.optString("Location.Bearing","none"),
+      deviceName = json.optString("Hardware","unknown"),
+      networkType = json.optString("NetworkType","unknown"),
       proofsList = proofs
     )
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
