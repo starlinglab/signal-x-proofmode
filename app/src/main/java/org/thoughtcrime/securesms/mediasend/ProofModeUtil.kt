@@ -52,7 +52,7 @@ object ProofModeUtil {
     val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
     val t = df.parse(time).time
     val date = Date(t)
-    val format = SimpleDateFormat("yyyy-MM-dd h:mm a")
+    val format = SimpleDateFormat("MMM d, yyyy – h:mm a")
     return format.format(date)
   }
 
@@ -60,7 +60,7 @@ object ProofModeUtil {
   //  val df = SimpleDateFormat("yyyy-mm-dd'T'hh:mm'Z'")
    // val t = df.parse(time).time
     val date = Date(time)
-    val format = SimpleDateFormat("yyyy-MM-dd h:mm a")
+    val format = SimpleDateFormat("MMM d, yyyy – h:mm a")
     return format.format(date)
   }
 
