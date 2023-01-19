@@ -127,7 +127,7 @@ object ProofModeUtil {
   fun getProofHash(context: Context, uri: Uri, byteArray: ByteArray, mimeType: String): String {
     val isEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)
     return if (isEnabled) {
-      val proofHash = ProofMode.generateProof(context, uri, byteArray, mimeType)
+      val proofHash = ProofMode.generateProof(context, Uri.parse("$uri.jpg"), byteArray, mimeType)
       ProofMode.getProofDir(context, proofHash)
       photoByteArray = byteArray
 
