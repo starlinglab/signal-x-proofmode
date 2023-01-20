@@ -1,10 +1,12 @@
 package org.thoughtcrime.securesms.mediasend.v2.capture
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -24,6 +26,12 @@ class ProofPreviewFragment : Fragment(R.layout.proof_mode_preview) {
     setupView()
 
     return binding.root
+  }
+
+  override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
+    val inflater = super.onGetLayoutInflater(savedInstanceState)
+    val contextThemeWrapper: Context = ContextThemeWrapper(requireContext(), R.style.Signal_DayNight_NoActionBar)
+    return inflater.cloneInContext(contextThemeWrapper)
   }
 
   private fun setupView() {
