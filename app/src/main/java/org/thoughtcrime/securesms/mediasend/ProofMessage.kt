@@ -17,8 +17,8 @@ data class ProofMessage(
     return "Taken: $taken"
   }
 
-  fun getHashText(): String {
-    return "Hash: $hash"
+  fun getShortHash(shortHash: String): String {
+    return "Hash: $shortHash"
   }
 
   fun getNearText(): String {

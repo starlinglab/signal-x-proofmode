@@ -27,7 +27,17 @@ class ProofSeeMoreActivity : AppCompatActivity() {
       binding.phoneText.text = it.getDeviceNameText()
       binding.locationText.text = it.getNearText()
       binding.networkText.text = it.getNetworkTypeText()
-      binding.ciCdText.text = it.getHashText().substringBefore(".zip")
+      binding.ciCdText.text = it.getShortHash(formatHashString(it.hash.substringBefore(".zip")))
+    }
+  }
+
+  private fun formatHashString(s: String): String {
+    return if (s.isNotEmpty() && s.length > 12) {
+      val firstSix = s.take(6)
+      val lastSix = s.takeLast(6)
+      "$firstSix...$lastSix"
+    } else {
+      s
     }
   }
 
