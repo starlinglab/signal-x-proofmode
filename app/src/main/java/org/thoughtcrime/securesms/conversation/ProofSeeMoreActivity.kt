@@ -35,7 +35,7 @@ class ProofSeeMoreActivity : AppCompatActivity() {
     return if (s.isNotEmpty() && s.length > 12) {
       val firstSix = s.take(6)
       val lastSix = s.takeLast(6)
-      "$firstSix ... $lastSix"
+      "$firstSix...$lastSix"
     } else {
       s
     }
