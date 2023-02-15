@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-final class ConfirmPaymentViewModel extends ViewModel {
+final public class ConfirmPaymentViewModel extends ViewModel {
 
   private static final String TAG = Log.tag(ConfirmPaymentViewModel.class);
 
@@ -38,7 +38,7 @@ final class ConfirmPaymentViewModel extends ViewModel {
   private final SingleLiveEvent<ErrorType> errorEvents;
   private final MutableLiveData<Boolean>   feeRetry;
 
-  ConfirmPaymentViewModel(@NonNull ConfirmPaymentState confirmPaymentState,
+  public ConfirmPaymentViewModel(@NonNull ConfirmPaymentState confirmPaymentState,
                           @NonNull ConfirmPaymentRepository confirmPaymentRepository)
   {
     this.store                    = new Store<>(confirmPaymentState);
@@ -51,7 +51,10 @@ final class ConfirmPaymentViewModel extends ViewModel {
     LiveData<Boolean> longLoadTime = LiveDataUtil.delay(1000, true);
     this.store.update(longLoadTime, (l, s) -> {
       if (s.getFeeStatus() == ConfirmPaymentState.FeeStatus.NOT_SET) return s.updateFeeStillLoading();
-      else                                                           return s;
+      else {
+          return s;
+
+      }
     });
 
     LiveData<Money> amount = Transformations.distinctUntilChanged(Transformations.map(store.getStateLiveData(), ConfirmPaymentState::getAmount));
@@ -84,7 +87,7 @@ final class ConfirmPaymentViewModel extends ViewModel {
     this.store.update(timeoutSignal, this::handleTimeout);
   }
 
-  @NonNull LiveData<ConfirmPaymentState> getState() {
+  @NonNull public LiveData<ConfirmPaymentState> getState() {
     return store.getStateLiveData();
   }
 
@@ -96,7 +99,7 @@ final class ConfirmPaymentViewModel extends ViewModel {
     return errorEvents;
   }
 
-  void confirmPayment() {
+  public void confirmPayment() {
     store.update(state -> state.updateStatus(ConfirmPaymentState.Status.SUBMITTING));
     confirmPaymentRepository.confirmPayment(store.getState(), this::handleConfirmPaymentResult);
   }
@@ -107,16 +110,21 @@ final class ConfirmPaymentViewModel extends ViewModel {
     store.clear();
   }
 
-  void refreshFee() {
+  public void refreshFee() {
     feeRetry.setValue(true);
   }
 
-  private @NonNull ConfirmPaymentRepository.GetFeeResult getFee(@NonNull Money amount) {
+  public @NonNull ConfirmPaymentRepository.GetFeeResult getFee(@NonNull Money amount) {
     ConfirmPaymentRepository.GetFeeResult result = confirmPaymentRepository.getFee(amount);
 
     if (result instanceof ConfirmPaymentRepository.GetFeeResult.Error) {
       errorEvents.postValue(ErrorType.CAN_NOT_GET_FEE);
     }
+    else if (result instanceof ConfirmPaymentRepository.GetFeeResult.Success) {
+      Money fee = ((ConfirmPaymentRepository.GetFeeResult.Success)result).getFee();
+      store.update(state -> this.store.getState().updateFee(fee));
+    }
+
 
     return result;
   }

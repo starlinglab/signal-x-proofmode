@@ -143,7 +143,7 @@ public class ConfirmPaymentState {
     }
   }
   
-  enum FeeStatus {
+  public enum FeeStatus {
     NOT_SET,
     STILL_LOADING,
     SET,

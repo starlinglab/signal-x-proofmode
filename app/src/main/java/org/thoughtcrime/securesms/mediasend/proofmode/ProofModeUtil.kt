@@ -1,4 +1,4 @@
-package org.thoughtcrime.securesms.mediasend
+package org.thoughtcrime.securesms.mediasend.proofmode
 
 import android.Manifest
 import android.content.Context

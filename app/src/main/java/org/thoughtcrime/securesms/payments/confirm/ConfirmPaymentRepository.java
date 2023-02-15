@@ -23,18 +23,17 @@ import org.whispersystems.signalservice.api.payments.Money;
 import java.io.IOException;
 import java.util.UUID;
 
-final class ConfirmPaymentRepository {
+public final class ConfirmPaymentRepository {
 
   private static final String TAG = Log.tag(ConfirmPaymentRepository.class);
 
   private final Wallet wallet;
 
-  ConfirmPaymentRepository(@NonNull Wallet wallet) {
+  public ConfirmPaymentRepository(@NonNull Wallet wallet) {
     this.wallet = wallet;
   }
 
-  @AnyThread
-  void confirmPayment(@NonNull ConfirmPaymentState state, @NonNull Consumer<ConfirmPaymentResult> consumer) {
+  @AnyThread public void confirmPayment(@NonNull ConfirmPaymentState state, @NonNull Consumer<ConfirmPaymentResult> consumer) {
     Log.i(TAG, "confirmPayment");
     SignalExecutors.BOUNDED.execute(() -> {
       Balance balance = wallet.getCachedBalance();
@@ -87,9 +86,9 @@ final class ConfirmPaymentRepository {
     }
   }
 
-  static class ConfirmPaymentResult {
+  public static class ConfirmPaymentResult {
 
-    static class Success extends ConfirmPaymentResult {
+    public static class Success extends ConfirmPaymentResult {
       private final UUID paymentId;
 
       Success(@NonNull UUID paymentId) {
@@ -101,7 +100,7 @@ final class ConfirmPaymentRepository {
       }
     }
 
-    static class Error extends ConfirmPaymentResult {
+    public static class Error extends ConfirmPaymentResult {
       private final PaymentsAddressException.Code code;
 
       Error() {
@@ -118,9 +117,9 @@ final class ConfirmPaymentRepository {
     }
   }
 
-  static class GetFeeResult {
+  public static class GetFeeResult {
 
-    static class Success extends GetFeeResult {
+    public static class Success extends GetFeeResult {
 
       private final Money fee;
 
@@ -128,7 +127,7 @@ final class ConfirmPaymentRepository {
         this.fee = fee;
       }
 
-      @NonNull Money getFee() {
+      @NonNull public Money getFee() {
         return fee;
       }
     }

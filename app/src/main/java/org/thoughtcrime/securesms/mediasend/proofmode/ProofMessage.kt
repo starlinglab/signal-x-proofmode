@@ -1,4 +1,4 @@
-package org.thoughtcrime.securesms.mediasend
+package org.thoughtcrime.securesms.mediasend.proofmode
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

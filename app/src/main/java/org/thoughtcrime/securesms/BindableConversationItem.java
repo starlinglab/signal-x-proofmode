@@ -23,7 +23,7 @@ import org.thoughtcrime.securesms.giph.mp4.GiphyMp4Playable;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.groups.GroupMigrationMembershipChange;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
-import org.thoughtcrime.securesms.mediasend.ProofMessage;
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofMessage;
 import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;

@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
 import org.thoughtcrime.securesms.databinding.ProofModeSeeMoreBinding
-import org.thoughtcrime.securesms.mediasend.ProofMessage
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofMessage
 
 class ProofSeeMoreActivity : AppCompatActivity() {
 

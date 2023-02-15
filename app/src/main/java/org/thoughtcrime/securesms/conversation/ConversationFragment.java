@@ -139,7 +139,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.longmessage.LongMessageFragment;
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
-import org.thoughtcrime.securesms.mediasend.ProofMessage;
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofMessage;
 import org.thoughtcrime.securesms.messagedetails.MessageDetailsFragment;
 import org.thoughtcrime.securesms.messagerequests.MessageRequestState;
 import org.thoughtcrime.securesms.messagerequests.MessageRequestViewModel;
