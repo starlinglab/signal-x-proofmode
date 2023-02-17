@@ -12,7 +12,8 @@ data class ProofJson(
   val location: String,
   val deviceName: String,
   val networkType: String,
-  val proofsList: List<Proofs>
+  val proofsList: List<Proofs>,
+  val notaryTx: String
 ): Parcelable {
 
 
@@ -25,6 +26,7 @@ data class ProofJson(
     json.put("deviceName", deviceName)
     json.put("networkType", networkType)
     json.put("proofsList", proofsList.toString())
+    json.put("notaryTx", notaryTx)
     return json
   }
 }
@@ -47,6 +49,7 @@ fun JSONObject.proofFromJson(): ProofJson {
     location = getString("location"),
     deviceName = getString("deviceName"),
     networkType = getString("networkType"),
-    proofsList = proofList
+    proofsList = proofList,
+    notaryTx = getString("notaryTx")
   )
 }

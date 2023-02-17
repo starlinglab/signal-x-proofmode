@@ -11,6 +11,8 @@ data class ProofMessage(
   val deviceName: String = "Not defined",
   val networkType: String = "Not defined",
   var hash: String = "Not defined",
+  var notaryTx: String = "Not defined",
+
 ): Parcelable {
 
   fun getTakenText(): String {
@@ -37,11 +39,16 @@ data class ProofMessage(
     return "Network Type: $networkType"
   }
 
+  fun getNotaryTxText(): String {
+    return "$notaryTx"
+  }
+
   override fun toString(): String {
     return "Taken: $taken" +
       "\n Near: $near" +
       "\n Proofs: $proofs" +
       "\n Device Name: $deviceName" +
-      "\n Hash: $hash"
+      "\n Hash: $hash" +
+      "\n Notary TX: $notaryTx"
   }
 }
