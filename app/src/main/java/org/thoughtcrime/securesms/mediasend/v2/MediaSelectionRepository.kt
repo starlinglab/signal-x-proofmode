@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.mediasend.MediaRepository
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.MediaTransform
 import org.thoughtcrime.securesms.mediasend.MediaUploadRepository
+import org.thoughtcrime.securesms.mediasend.ProofConstants
 import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinObject
 import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinProofUtil
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
@@ -148,8 +149,12 @@ class MediaSelectionRepository(context: Context) {
         recipient = contacts[0].recipientId
       }
 
-      recipient?.let {
-        MobileCoinNotaryUtil().notarize(recipient,MobileCoinNotaryUtil.DEFAULT_NOTARIZATION_AMOUNT, selectedMedia[0].proofHash.substring(0,16))
+      var notarize = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NOTARY_ENABLED_GLOBAL, true);
+
+      if (notarize) {
+        recipient?.let {
+          MobileCoinNotaryUtil().notarize(recipient, MobileCoinNotaryUtil.DEFAULT_NOTARIZATION_AMOUNT, selectedMedia[0].proofHash.substring(0, 16))
+        }
       }
 
     }

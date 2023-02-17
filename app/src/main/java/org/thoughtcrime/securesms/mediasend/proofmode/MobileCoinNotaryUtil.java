@@ -7,6 +7,7 @@ import org.signal.core.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.payments.Payee;
 import org.thoughtcrime.securesms.payments.PaymentsAddressException;
+import org.thoughtcrime.securesms.payments.Wallet;
 import org.thoughtcrime.securesms.payments.confirm.ConfirmPaymentRepository;
 import org.thoughtcrime.securesms.payments.confirm.ConfirmPaymentState;
 import org.thoughtcrime.securesms.payments.confirm.ConfirmPaymentViewModel;
@@ -21,14 +22,7 @@ import java.math.BigDecimal;
 
 public class MobileCoinNotaryUtil {
 
-  public final static String DEFAULT_NOTARIZATION_AMOUNT = "0.1";
-
-  public CreatePaymentViewModel createPaymentViewModel (String recipientId, String note) {
-    PayeeParcelable payee = new PayeeParcelable(new Payee(RecipientId.fromE164(recipientId)));
-    CreatePaymentViewModel model = new CreatePaymentViewModel.Factory(payee, note).create(CreatePaymentViewModel.class);
-
-    return model;
-  }
+  public final static String DEFAULT_NOTARIZATION_AMOUNT = "0.01";
 
   public void notarize (RecipientId recipient, String mcAmount, String note) {
 
@@ -38,7 +32,11 @@ public class MobileCoinNotaryUtil {
     ConfirmPaymentState      state = new ConfirmPaymentState(payee, amount, note);
 
     SignalExecutors.BOUNDED.execute(() -> {
-      ConfirmPaymentRepository repo  = new ConfirmPaymentRepository(ApplicationDependencies.getPayments().getWallet());
+      Wallet wallet = ApplicationDependencies.getPayments().getWallet();
+      wallet.getFullLedger();
+      wallet.refresh();
+
+      ConfirmPaymentRepository repo  = new ConfirmPaymentRepository(wallet);
       ConfirmPaymentViewModel model = new ConfirmPaymentViewModel(state, repo);
 
       while (state.getFeeStatus() != ConfirmPaymentState.FeeStatus.SET)
@@ -46,13 +44,18 @@ public class MobileCoinNotaryUtil {
         ConfirmPaymentRepository.GetFeeResult result = model.getFee(amount);
         if (result instanceof ConfirmPaymentRepository.GetFeeResult.Success) {
           Money fee = ((ConfirmPaymentRepository.GetFeeResult.Success) result).getFee();
-          ConfirmPaymentState newState = state.updateFee(fee);
+          //if we have the fee, we can now confirm payment, so break this loop
           break;
         }
 
+        //wait one second to get updated status fee
         try { Thread.sleep(1000);}catch (Exception e){}
       }
-      //model.getFee(amount);
+
+      //then wait 3 more seconds... why? I don't because it works!
+      try { Thread.sleep(3000);}catch (Exception e){}
+
+      //now confirm payment
       model.confirmPayment();
 
     });
