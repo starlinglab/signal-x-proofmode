@@ -45,15 +45,15 @@ import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.MediaTransform
 import org.thoughtcrime.securesms.mediasend.MediaUploadRepository
 import org.thoughtcrime.securesms.mediasend.ProofConstants
-import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinObject
-import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinProofUtil
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
 import org.thoughtcrime.securesms.mediasend.ProofConstants.PROOF_OBJECT
-import org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtil
 import org.thoughtcrime.securesms.mediasend.SentMediaQualityTransform
 import org.thoughtcrime.securesms.mediasend.VideoEditorFragment
 import org.thoughtcrime.securesms.mediasend.VideoTrimTransform
 import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinNotaryUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinObject
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinProofUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtil
 import org.thoughtcrime.securesms.mms.MediaConstraints
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage
 import org.thoughtcrime.securesms.mms.OutgoingSecureMediaMessage
@@ -123,12 +123,48 @@ class MediaSelectionRepository(context: Context) {
     newMediaList.addAll(selectedMedia)
 
     if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)) {
-      val file = ProofModeUtil.createZipProof(selectedMedia.first().proofHash, context)
+
+
+      var recipient: RecipientId? = singleContact?.let { it.recipientId }
+
+      if (contacts.isNotEmpty()) {
+        recipient = contacts[0].recipientId
+      }
+
+      var proofHash = selectedMedia.first().proofHash
+
+      var notarize = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NOTARY_ENABLED_GLOBAL, true);
+
+      if (notarize) {
+        recipient?.let {
+          MobileCoinNotaryUtil().notarize(recipient, MobileCoinNotaryUtil.DEFAULT_NOTARIZATION_AMOUNT, selectedMedia[0].proofHash.substring(0, 16))
+
+          //in the future, this is where we will add the notarization details into the zip proof directory
+
+          while (true) {
+
+            var txId = MobileCoinProofUtil.getTxFromHash(selectedMedia[0].proofHash)
+            if (txId.isNotEmpty())
+              break;
+            //wait one second to get updated status fee
+
+            //wait one second to get updated status fee
+            try {
+              Thread.sleep(1000)
+            } catch (e: java.lang.Exception) {
+            }
+
+          }
+
+        }
+      }
+
+      val file = ProofModeUtil.createZipProof(proofHash, context)
       newMediaList.add(
         Media(
           requireNotNull(Uri.fromFile(file)),
           MediaUtil.OCTET,
-          selectedMedia[0].proofHash,
+          proofHash,
           System.currentTimeMillis(),
           0,
           0,
@@ -142,20 +178,6 @@ class MediaSelectionRepository(context: Context) {
         )
       )
 
-
-      var recipient: RecipientId? = singleContact?.let { it.recipientId }
-
-      if (contacts.isNotEmpty()) {
-        recipient = contacts[0].recipientId
-      }
-
-      var notarize = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NOTARY_ENABLED_GLOBAL, true);
-
-      if (notarize) {
-        recipient?.let {
-          MobileCoinNotaryUtil().notarize(recipient, MobileCoinNotaryUtil.DEFAULT_NOTARIZATION_AMOUNT, selectedMedia[0].proofHash.substring(0, 16))
-        }
-      }
 
     }
 
@@ -461,6 +483,7 @@ class MediaSelectionRepository(context: Context) {
             "\nProofs: $proofListString" +
             "\nNetwork Type: ${proofObject.networkType}" +
             "\nDevice Name: ${proofObject.deviceName} " + "Android v.${Build.VERSION.RELEASE}" +
+            "\nMOB TX: ${proofObject.notaryTx}" +
             "\nProofs were checked and verified"
           headerString + "\n" + body
         } else {
