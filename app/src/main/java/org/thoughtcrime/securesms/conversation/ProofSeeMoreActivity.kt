@@ -13,6 +13,8 @@ import com.google.protobuf.ByteString
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.databinding.ProofModeSeeMoreBinding
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinNotaryUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinProofUtil
 import org.thoughtcrime.securesms.mediasend.proofmode.ProofMessage
 import org.thoughtcrime.securesms.payments.confirm.ConfirmPaymentViewModel
 
@@ -36,38 +38,27 @@ class ProofSeeMoreActivity : AppCompatActivity() {
       binding.locationText.text = it.getNearText()
       binding.networkText.text = it.getNetworkTypeText()
 
+      var notaryTx = it.getNotaryTxText()
+
       val proofHash = it.hash.substringBefore(".zip")
 
-      val proofHashShort = proofHash.substring(0,16)
-
-      val payments = SignalDatabase.payments.all
-      for (payment in payments) {
-        if (payment.note == proofHashShort) {
-
-          val pubKeyCount: Int? = payment.paymentMetaData?.mobileCoinTxoIdentification?.getPublicKeyCount()
-          if (pubKeyCount == 0) break
-
-          val pubKey: ByteString? = payment.paymentMetaData?.mobileCoinTxoIdentification?.getPublicKey(0)
-
-          pubKey?.let {
-            var formattedTxId = ConfirmPaymentViewModel.bytesToHex(it.toByteArray())
-            binding.notaryText.text = getString(R.string.noteries_text) + ": ${formattedTxId}";
-          }
-
-          break;
-        }
+      if (notaryTx.isEmpty())
+      {
+        notaryTx = MobileCoinProofUtil.getTxFromHash(proofHash)
       }
 
-      val notaryTx = it.getNotaryTxText()
+      binding.notaryText.text = getString(R.string.noteries_text) + ": ${notaryTx}";
+
+
       binding.notaryText.setOnClickListener {
-        copyToClipboard("MobileCoin TX", notaryTx)
+        copyToClipboard("prooftx", notaryTx)
       }
 
 
       binding.ciCdText.text = it.getShortHash(formatHashString(proofHash))
 
       binding.ciCdText.setOnClickListener {
-        copyToClipboard("hash", proofHash)
+        copyToClipboard("proofhash", proofHash)
       }
 
     }

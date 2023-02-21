@@ -1,13 +1,17 @@
 package org.thoughtcrime.securesms.mediasend.proofmode
 
 import android.net.Uri
+import com.google.protobuf.ByteString
+import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.payments.Payee
+import org.thoughtcrime.securesms.payments.confirm.ConfirmPaymentViewModel
 import org.thoughtcrime.securesms.payments.create.CreatePaymentViewModel
 import org.thoughtcrime.securesms.payments.preferences.model.PayeeParcelable
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.Base64
 
-object MobileCoinProofUtil {
+public object MobileCoinProofUtil {
 
   // copy from MobileCoinMainNetConfig
   fun getFogAuthoritySpki(): ByteArray {
@@ -38,6 +42,32 @@ object MobileCoinProofUtil {
 
   fun getFogUri(): Uri {
     return Uri.parse("fog://service.fog.mob.production.namda.net")
+  }
+
+  fun getTxFromHash(proofHash : String): String {
+
+    val proofHashShort = proofHash.substring(0,16)
+
+    val payments = SignalDatabase.payments.all
+
+    for (payment in payments) {
+      if (payment.note == proofHashShort) {
+
+        val pubKeyCount: Int? = payment.paymentMetaData?.mobileCoinTxoIdentification?.getPublicKeyCount()
+        if (pubKeyCount == 0) break
+
+        val pubKey: ByteString? = payment.paymentMetaData?.mobileCoinTxoIdentification?.getPublicKey(0)
+
+        pubKey?.let {
+          var txId = ConfirmPaymentViewModel.bytesToHex(pubKey.toByteArray())
+          return txId
+        }
+
+        break;
+      }
+    }
+
+    return ""
   }
 
 }

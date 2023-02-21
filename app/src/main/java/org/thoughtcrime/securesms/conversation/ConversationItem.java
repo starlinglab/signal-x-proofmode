@@ -1082,6 +1082,9 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
         }
         proofMessage.setHash(hash);
 
+
+
+
         /**
          * SHOW CUSTOM MESSAGE UI INSTEAD OF SIGNALS DEFAULT
          */

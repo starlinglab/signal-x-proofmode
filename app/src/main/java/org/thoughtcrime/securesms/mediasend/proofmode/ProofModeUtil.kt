@@ -248,6 +248,8 @@ object ProofModeUtil {
     val bufferedReader: BufferedReader = file.bufferedReader()
     val inputString = bufferedReader.use { it.readText() }
     val json = JSONObject(inputString)
+    val proofHash = json.optString("File Hash SHA256","");
+
     val proofJson = ProofJson(
       longitude = json.optString("Location.Longitude","0.0"),
       latitude = json.optString("Location.Latitude","0.0"),
@@ -256,8 +258,10 @@ object ProofModeUtil {
       deviceName = json.optString("Hardware","unknown"),
       networkType = json.optString("NetworkType","unknown"),
       proofsList = proofs,
-      notaryTx = json.optString("notaryTx","")
+      notaryTx = json.optString("notaryTx",MobileCoinProofUtil.getTxFromHash(proofHash)),
     )
+
+
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
   }
 
