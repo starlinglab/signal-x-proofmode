@@ -13,7 +13,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.thoughtcrime.securesms.mediasend.ProofModeUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtil
 
 const val DEFAULT_LAT = 40.7128
 const val DEFAULT_LON = -74.0060

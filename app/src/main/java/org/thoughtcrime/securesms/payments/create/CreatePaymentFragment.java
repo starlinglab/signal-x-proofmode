@@ -21,6 +21,7 @@ import androidx.transition.TransitionManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.signal.core.util.money.FiatMoney;
 import org.thoughtcrime.securesms.LoggingFragment;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.emoji.EmojiTextView;
@@ -35,11 +36,13 @@ import org.thoughtcrime.securesms.util.navigation.SafeNavigation;
 import org.whispersystems.signalservice.api.payments.FormatterOptions;
 import org.whispersystems.signalservice.api.payments.Money;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class CreatePaymentFragment extends LoggingFragment {
 
@@ -116,6 +119,8 @@ public class CreatePaymentFragment extends LoggingFragment {
 
     initializeInfoIcon();
 
+    initializeDefaultValues();
+
     note.setOnClickListener(v -> SafeNavigation.safeNavigate(Navigation.findNavController(v), R.id.action_createPaymentFragment_to_editPaymentNoteFragment));
     addNote.setOnClickListener(v -> SafeNavigation.safeNavigate(Navigation.findNavController(v), R.id.action_createPaymentFragment_to_editPaymentNoteFragment));
 
@@ -185,6 +190,18 @@ public class CreatePaymentFragment extends LoggingFragment {
 
     spacer.setBounds(0, 0, ViewUtil.dpToPx(8), ViewUtil.dpToPx(16));
     infoIcon.setBounds(0, 0, ViewUtil.dpToPx(16), ViewUtil.dpToPx(16));
+  }
+
+  private void initializeDefaultValues() {
+
+    if (getArguments().containsKey("amount")) {
+      String amount = getArguments().getString("amount");
+      String amountFiat = getArguments().getString("amountfiat");
+      InputState state = new InputState();
+      state.updateAmount(amount, amountFiat, Money.mobileCoin(new BigDecimal(amount)), Optional.of(new FiatMoney(new BigDecimal(amountFiat), Currency.getInstance("US"))));
+      updateAmount(state);
+    }
+
   }
 
   private void updateNote(@Nullable CharSequence note) {

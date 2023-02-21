@@ -1,6 +1,10 @@
-package org.thoughtcrime.securesms.mediasend
+package org.thoughtcrime.securesms.mediasend.proofmode
 
 import android.net.Uri
+import org.thoughtcrime.securesms.payments.Payee
+import org.thoughtcrime.securesms.payments.create.CreatePaymentViewModel
+import org.thoughtcrime.securesms.payments.preferences.model.PayeeParcelable
+import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.Base64
 
 object MobileCoinProofUtil {
@@ -35,6 +39,7 @@ object MobileCoinProofUtil {
   fun getFogUri(): Uri {
     return Uri.parse("fog://service.fog.mob.production.namda.net")
   }
+
 }
 
 data class MobileCoinObject(

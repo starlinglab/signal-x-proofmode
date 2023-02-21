@@ -1,13 +1,21 @@
 package org.thoughtcrime.securesms.conversation
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.protobuf.ByteString
+import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.databinding.ProofModeSeeMoreBinding
-import org.thoughtcrime.securesms.mediasend.ProofMessage
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofMessage
+import org.thoughtcrime.securesms.payments.confirm.ConfirmPaymentViewModel
+
 
 class ProofSeeMoreActivity : AppCompatActivity() {
 
@@ -27,8 +35,50 @@ class ProofSeeMoreActivity : AppCompatActivity() {
       binding.phoneText.text = it.getDeviceNameText()
       binding.locationText.text = it.getNearText()
       binding.networkText.text = it.getNetworkTypeText()
-      binding.ciCdText.text = it.getShortHash(formatHashString(it.hash.substringBefore(".zip")))
+
+      val proofHash = it.hash.substringBefore(".zip")
+
+      val proofHashShort = proofHash.substring(0,16)
+
+      val payments = SignalDatabase.payments.all
+      for (payment in payments) {
+        if (payment.note == proofHashShort) {
+
+          val pubKeyCount: Int? = payment.paymentMetaData?.mobileCoinTxoIdentification?.getPublicKeyCount()
+          if (pubKeyCount == 0) break
+
+          val pubKey: ByteString? = payment.paymentMetaData?.mobileCoinTxoIdentification?.getPublicKey(0)
+
+          pubKey?.let {
+            var formattedTxId = ConfirmPaymentViewModel.bytesToHex(it.toByteArray())
+            binding.notaryText.text = getString(R.string.noteries_text) + ": ${formattedTxId}";
+          }
+
+          break;
+        }
+      }
+
+      val notaryTx = it.getNotaryTxText()
+      binding.notaryText.setOnClickListener {
+        copyToClipboard("MobileCoin TX", notaryTx)
+      }
+
+
+      binding.ciCdText.text = it.getShortHash(formatHashString(proofHash))
+
+      binding.ciCdText.setOnClickListener {
+        copyToClipboard("hash", proofHash)
+      }
+
     }
+  }
+
+  private fun copyToClipboard (label: String, value: String) {
+    val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText(label, value)
+    clipboard.setPrimaryClip(clip)
+
+    Toast.makeText(this, "Copied $label", Toast.LENGTH_SHORT).show()
   }
 
   private fun formatHashString(s: String): String {

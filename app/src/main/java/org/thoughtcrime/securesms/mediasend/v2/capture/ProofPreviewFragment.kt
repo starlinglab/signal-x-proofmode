@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -13,7 +12,7 @@ import androidx.preference.PreferenceManager
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.databinding.ProofModePreviewBinding
 import org.thoughtcrime.securesms.mediasend.ProofConstants
-import org.thoughtcrime.securesms.mediasend.ProofModeUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtil
 import org.thoughtcrime.securesms.mediasend.setOnClickListenerWithThrottle
 
 class ProofPreviewFragment : Fragment(R.layout.proof_mode_preview) {

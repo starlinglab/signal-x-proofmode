@@ -3,7 +3,6 @@ package org.thoughtcrime.securesms.components.settings.app.proofmode
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,7 @@ import org.bouncycastle.openpgp.PGPException
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.databinding.ProofModeFragmentBinding
 import org.thoughtcrime.securesms.mediasend.ProofConstants
-import org.thoughtcrime.securesms.mediasend.ProofModeUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtil
 import org.thoughtcrime.securesms.mediasend.setOnClickListenerWithThrottle
 import org.witness.proofmode.crypto.pgp.PgpUtils
 import java.io.IOException

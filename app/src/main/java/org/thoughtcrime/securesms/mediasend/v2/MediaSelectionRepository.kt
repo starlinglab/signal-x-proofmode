@@ -44,14 +44,16 @@ import org.thoughtcrime.securesms.mediasend.MediaRepository
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.MediaTransform
 import org.thoughtcrime.securesms.mediasend.MediaUploadRepository
-import org.thoughtcrime.securesms.mediasend.MobileCoinObject
-import org.thoughtcrime.securesms.mediasend.MobileCoinProofUtil
+import org.thoughtcrime.securesms.mediasend.ProofConstants
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinObject
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinProofUtil
 import org.thoughtcrime.securesms.mediasend.ProofConstants.IS_PROOF_ENABLED
 import org.thoughtcrime.securesms.mediasend.ProofConstants.PROOF_OBJECT
-import org.thoughtcrime.securesms.mediasend.ProofModeUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtil
 import org.thoughtcrime.securesms.mediasend.SentMediaQualityTransform
 import org.thoughtcrime.securesms.mediasend.VideoEditorFragment
 import org.thoughtcrime.securesms.mediasend.VideoTrimTransform
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinNotaryUtil
 import org.thoughtcrime.securesms.mms.MediaConstraints
 import org.thoughtcrime.securesms.mms.OutgoingMediaMessage
 import org.thoughtcrime.securesms.mms.OutgoingSecureMediaMessage
@@ -61,6 +63,7 @@ import org.thoughtcrime.securesms.payments.MobileCoinConfig
 import org.thoughtcrime.securesms.proofFromJson
 import org.thoughtcrime.securesms.providers.BlobProvider
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.scribbles.ImageEditorFragment
 import org.thoughtcrime.securesms.sms.MessageSender
 import org.thoughtcrime.securesms.sms.MessageSender.PreUploadResult
@@ -118,6 +121,7 @@ class MediaSelectionRepository(context: Context) {
 
     val newMediaList = arrayListOf<Media>()
     newMediaList.addAll(selectedMedia)
+
     if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(IS_PROOF_ENABLED, true)) {
       val file = ProofModeUtil.createZipProof(selectedMedia.first().proofHash, context)
       newMediaList.add(
@@ -137,6 +141,22 @@ class MediaSelectionRepository(context: Context) {
           Optional.empty()
         )
       )
+
+
+      var recipient: RecipientId? = singleContact?.let { it.recipientId }
+
+      if (contacts.isNotEmpty()) {
+        recipient = contacts[0].recipientId
+      }
+
+      var notarize = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ProofConstants.IS_PROOF_NOTARY_ENABLED_GLOBAL, true);
+
+      if (notarize) {
+        recipient?.let {
+          MobileCoinNotaryUtil().notarize(recipient, MobileCoinNotaryUtil.DEFAULT_NOTARIZATION_AMOUNT, selectedMedia[0].proofHash.substring(0, 16))
+        }
+      }
+
     }
 
     val isSendingToStories = singleContact?.isStory == true || contacts.any { it.isStory }
@@ -418,6 +438,7 @@ class MediaSelectionRepository(context: Context) {
         val proofJson = PreferenceManager.getDefaultSharedPreferences(context).getString(PROOF_OBJECT, "").orEmpty()
         if (proofJson.isNotEmpty()) {
           val proofObject = JSONObject(proofJson).proofFromJson()
+
           val proofListString = if (proofObject.proofsList.isNotEmpty()) {
             proofObject.proofsList.map { it.title }.toString().dropLast(1).drop(1)
           } else {

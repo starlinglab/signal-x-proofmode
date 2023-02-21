@@ -1,4 +1,4 @@
-package org.thoughtcrime.securesms.mediasend
+package org.thoughtcrime.securesms.mediasend.proofmode
 
 import android.Manifest
 import android.content.Context
@@ -244,7 +244,7 @@ object ProofModeUtil {
     if (resultLocation) proofs.add(Proofs.LOCATION)
     if (resultNetworkAndPhone) proofs.add(Proofs.NETWORK_AND_PHONE)
 
-    Log.e("FILE::", "$file")
+    Log.d("FILE::", "$file")
     val bufferedReader: BufferedReader = file.bufferedReader()
     val inputString = bufferedReader.use { it.readText() }
     val json = JSONObject(inputString)
@@ -255,7 +255,8 @@ object ProofModeUtil {
       location = json.optString("Location.Bearing","none"),
       deviceName = json.optString("Hardware","unknown"),
       networkType = json.optString("NetworkType","unknown"),
-      proofsList = proofs
+      proofsList = proofs,
+      notaryTx = json.optString("notaryTx","")
     )
     PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PROOF_OBJECT, proofJson.toJsonObject().toString()).apply()
   }
@@ -276,15 +277,22 @@ fun parseProofObjectFromString(proof: String): ProofMessage {
     val networkType = proof.substringAfter("Network Type:").substringBefore("\n").trim()
     val deviceName = proof.substringAfter("Device Name:").substringBefore("\n").trim()
     val hash = proof.substringAfter("Hash:").substringBefore("\n").trim()
+
+    var tx = ""
+    if (proof.contains("Notary TX:"))
+      tx = proof.substringAfter("Notary TX:").substringBefore("\n").trim()
+
     ProofMessage(
       taken = takenText,
       near = nearText,
       proofs = proofsList,
       deviceName = deviceName,
       networkType = networkType,
-      hash = hash
+      hash = hash,
+      notaryTx =  tx
     )
   } catch (ex: Exception) {
     ProofMessage()
   }
+
 }

@@ -119,7 +119,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
 import org.thoughtcrime.securesms.mediapreview.MediaPreviewV2Fragment;
-import org.thoughtcrime.securesms.mediasend.ProofMessage;
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofMessage;
 import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.mms.ImageSlide;
 import org.thoughtcrime.securesms.mms.PartAuthority;
@@ -164,7 +164,7 @@ import java.util.concurrent.TimeUnit;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-import static org.thoughtcrime.securesms.mediasend.ProofModeUtilKt.parseProofObjectFromString;
+import static org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtilKt.parseProofObjectFromString;
 
 /**
  * A view that displays an individual conversation item within a conversation

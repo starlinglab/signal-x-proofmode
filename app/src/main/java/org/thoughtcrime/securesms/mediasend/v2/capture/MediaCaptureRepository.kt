@@ -12,13 +12,12 @@ import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.mediasend.Media
 import org.thoughtcrime.securesms.mediasend.MediaRepository
-import org.thoughtcrime.securesms.mediasend.ProofModeUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.MobileCoinNotaryUtil
+import org.thoughtcrime.securesms.mediasend.proofmode.ProofModeUtil
 import org.thoughtcrime.securesms.providers.BlobProvider
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.StorageUtil
 import org.thoughtcrime.securesms.video.VideoUtil
-import org.witness.proofmode.ProofMode
-import java.io.File
 import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.IOException
@@ -100,10 +99,12 @@ class MediaCaptureRepository(context: Context) {
         .withMimeType(mimeType)
         .createForSingleSessionOnDisk(context)
 
+      var hash = ProofModeUtil.getProofHash(context, uri, byteArray, mimeType)
+
       Media(
         uri,
         mimeType,
-        ProofModeUtil.getProofHash(context, uri, byteArray, mimeType),
+        hash,
         System.currentTimeMillis(),
         width,
         height,
@@ -115,6 +116,8 @@ class MediaCaptureRepository(context: Context) {
         Optional.empty(),
         Optional.empty()
       )
+
+
     } catch (e: IOException) {
       return null
     }
