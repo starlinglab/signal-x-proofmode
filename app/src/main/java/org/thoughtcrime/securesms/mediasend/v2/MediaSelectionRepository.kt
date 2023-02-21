@@ -141,20 +141,6 @@ class MediaSelectionRepository(context: Context) {
 
           //in the future, this is where we will add the notarization details into the zip proof directory
 
-          while (true) {
-
-            var txId = MobileCoinProofUtil.getTxFromHash(selectedMedia[0].proofHash)
-            if (txId.isNotEmpty())
-              break;
-            //wait one second to get updated status fee
-
-            //wait one second to get updated status fee
-            try {
-              Thread.sleep(1000)
-            } catch (e: java.lang.Exception) {
-            }
-
-          }
 
         }
       }
